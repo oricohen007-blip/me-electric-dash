@@ -167,13 +167,13 @@ function key(){var m=(location.hash+location.search).match(/[#&?]k=([0-9a-f]+)/)
 function msg(t){document.getElementById('app').innerHTML='<div class="err" style="margin:26px">'+t+'</div>';}
 function load(fresh){
   var k=key(); if(!k){msg('חסר מפתח בקישור.');return;}
-  if(!fresh)msg('טוען נתונים…'); else document.getElementById('upd').textContent='מרענן…';
+  if(!fresh&&!window.__booted)msg('טוען נתונים…'); else document.getElementById('upd').textContent='מושך נתונים חדשים מגוגל… (כ-20 שניות)';
   fetch(API+'?format=json&k='+k+(fresh?'&fresh=1':''),{cache:'no-store'})
     .then(function(r){return r.text();})
     .then(function(t){var D;try{D=JSON.parse(t);}catch(e){msg(t.indexOf('אין גישה')>=0?'אין גישה. המפתח בקישור לא נכון.':'לא הצלחתי לטעון. נסו לרענן.');return;}boot(D);})
     .catch(function(){msg('לא הצלחתי לטעון. בדקו חיבור לאינטרנט ונסו שוב.');});
 }
-function boot(D){
+function boot(D){window.__booted=1;
 if(D.names){var _ta=document.createElement('textarea');D.names=D.names.map(function(n){if(n.indexOf('&')<0)return n;_ta.innerHTML=n;return _ta.value;});}
 if(D.names)D.items=(D.items||[]).map(function(r){return [r[0],D.names[r[1]],r[2],r[3],r[4],r[5]];});
 (function(){
@@ -346,7 +346,10 @@ fr.href='#';fr.removeAttribute('target');fr.onclick=function(ev){ev.preventDefau
 render();
 })();
 }
+var LAST=Date.now();
 load(false);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&Date.now()-LAST>15*6e4){LAST=Date.now();load(false);}});
+setInterval(function(){if(document.visibilityState==='visible'){LAST=Date.now();load(false);}},15*6e4);
 </script>
 </body>
 </html>
