@@ -164,6 +164,11 @@ td.z{color:#C3C1CB;font-weight:400}
 
 var API='https://script.google.com/macros/s/AKfycbwaxL4rS7PkT9G08Pbg-AP-wJMZMbeMAVnExfJBczE5d10XK3lVU59XRU6Fm4mexXsZ6Q/exec';
 function key(){var m=(location.hash+location.search).match(/[#&?]k=([0-9a-f]+)/);if(m){try{localStorage.setItem('mek',m[1]);}catch(e){}return m[1];}try{return localStorage.getItem('mek');}catch(e){return null;}}
+var HIT_API='https://script.google.com/macros/s/AKfycbza6BZjw3xMxWigCGlW6fgElp5DnhbFwW0YG7GttMcOx7Nm2Rhya1gshtMUcJZambSn/exec',HITS=null;
+/* המונה שלנו באתר: כל כניסה נקלטת מיד (Analytics מגיע באיחור של 2–3 שעות) */
+function loadHits(){var k=key();if(!k)return;fetch(HIT_API+'?hits=1&k='+k,{cache:'no-store'}).then(function(r){return r.json();})
+  .then(function(j){if(!j||!j.hits)return;var ch=!HITS||HITS.length!==j.hits.length;HITS=j.hits;
+    if(ch&&window.__rerender&&!(document.activeElement&&document.activeElement.id==='q'))window.__rerender();}).catch(function(){});}
 function msg(t){document.getElementById('app').innerHTML='<div class="err" style="margin:26px">'+t+'</div>';}
 function load(fresh){
   var k=key(); if(!k){msg('חסר מפתח בקישור.');return;}
@@ -223,7 +228,14 @@ function pageName(p){p=p||'';try{p=decodeURIComponent(p);}catch(e){}
   m=p.match(/^\/page\/(.+)$/i);if(m)return'דף · '+m[1].replace(/-/g,' ');
   return p.replace(/^\//,'').replace(/-/g,' ');}
 function hm(s){return s.slice(8,10)+':'+s.slice(10,12);}
-var VIS=(D.visits||[]).map(function(r){var sm=(D.vsrc[r[1]]||'|').split('|');return{t:r[0],d:r[0].slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(D.vpage[r[2]]),dv:r[3],s:r[4],c:r[5],p:r[6]};});
+var GAV=(D.visits||[]).map(function(r){var sm=(D.vsrc[r[1]]||'|').split('|');return{t:r[0],d:r[0].slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(D.vpage[r[2]]),dv:r[3],s:r[4],c:r[5],p:r[6]};});
+/* רשימת הכניסות: Analytics עד הדקה האחרונה שהוא מסר, ומשם והלאה הכניסות מהמונה שלנו */
+function allVis(){var cut=GAV.length?GAV[0].t:'0',by={},out=[];
+  (HITS||[]).forEach(function(h){var x=by[h[1]]||(by[h[1]]={c:0,p:0});
+    if(h[2]==='s'){x.t=h[0];x.sm=h[3];x.lp=h[4];x.dv=h[5];}else if(h[2]==='c')x.c=1;else if(h[2]==='p')x.p=1;});
+  Object.keys(by).forEach(function(id){var x=by[id];if(!x.t||x.t<=cut||/^mehittest\|/.test(x.sm))return;var sm=x.sm.split('|');
+    out.push({t:x.t,d:x.t.slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(x.lp),dv:x.dv,s:1,c:x.c,p:x.p,live:1});});
+  out.sort(function(a,b){return a.t<b.t?1:-1;});return out.concat(GAV);}
 function liveHtml(){var R=D.rt;if(!R)return'';
   if(R.error)return'<div class="live"><div><div class="lt"><span class="dot"></span>עכשיו באתר</div><small>לא הצלחתי לקרוא: '+esc(R.error)+'</small></div></div>';
   var mm=[];for(var i=0;i<30;i++)mm.push(0);(R.mins||[]).forEach(function(r){var i=+r[0];if(i>=0&&i<30)mm[i]+=r[1];});
@@ -244,7 +256,7 @@ function hoursHtml(a,b){var hh=[];for(var i=0;i<24;i++)hh.push(0);
   hh.forEach(function(v,i){h+='<i class="'+(i===pk&&sum?'pk':'')+'" style="height:'+Math.max(2,v/mx*100)+'%" title="'+i+':00 · '+fmt(v)+' כניסות"></i>';});
   h+='</div><div class="hl">';for(var j=0;j<24;j++)h+='<span>'+(j%3===0?j:'')+'</span>';
   return h+'</div></div>';}
-function visitsHtml(){var Y=add(T,-1),day;
+function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0].live;
   if(state.day)day=(state.day===T||state.day===Y)?state.day:null;
   else day=state.r==='y'?Y:T;
   if(day===T&&!state.day&&!VIS.some(function(v){return v.d===T;}))day=Y;
@@ -253,7 +265,7 @@ function visitsHtml(){var Y=add(T,-1),day;
   if(!day)return h+'<div class="empty">רשימה של כל כניסה יש רק להיום ולאתמול</div></div>';
   var L=VIS.filter(function(v){return v.d===day&&(state.vf==='all'||v.c||v.p);});
   var last=VIS.filter(function(v){return v.d===day;})[0];
-  h+='<div class="note" style="margin:-4px 0 6px">'+(last?'הכניסה האחרונה שנקלטה: '+hm(last.t)+(day===T?' · Analytics מתעדכן באיחור של 2–3 שעות':''):'')+'</div>';
+  h+='<div class="note" style="margin:-4px 0 6px">'+(last?'הכניסה האחרונה: '+hm(last.t)+(day===T?(hasLive?' · מתעדכן מיד':' · Analytics מתעדכן באיחור של 2–3 שעות'):''):'')+'</div>';
   if(!L.length)return h+'<div class="empty">אין כניסות להצגה</div></div>';
   var DV={m:'נייד',d:'מחשב',t:'טאבלט'};
   h+='<table class="vt"><tbody>';
@@ -340,15 +352,17 @@ function bind(){
 function setR(r){state.r=r||state.r;[].forEach.call(document.querySelectorAll('#rng button'),function(b){b.classList.toggle('on',!!r&&b.dataset.r===r);});}
 [].forEach.call(document.querySelectorAll('#rng button'),function(b){b.onclick=function(){state.day=null;state.n=25;setR(b.dataset.r);render();};});
 var g=new Date(D.gen),mins=Math.round((Date.now()-g)/6e4);
-document.getElementById('upd').textContent='נתונים מ-'+g.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})+' · מתרענן כל 15 דקות';
+document.getElementById('upd').textContent='נתונים מ-'+g.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})+' · "כל כניסה" מתעדכן כל דקה';
 var fr=document.getElementById('fresh');
-fr.href='#';fr.removeAttribute('target');fr.onclick=function(ev){ev.preventDefault();load(true);};
+fr.href='#';fr.removeAttribute('target');fr.onclick=function(ev){ev.preventDefault();load(true);loadHits();};
+window.__rerender=render;
 render();
 })();
 }
 var LAST=Date.now();
-load(false);
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&Date.now()-LAST>15*6e4){LAST=Date.now();load(false);}});
+load(false);loadHits();
+setInterval(function(){if(document.visibilityState==='visible')loadHits();},6e4);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState!=='visible')return;loadHits();if(Date.now()-LAST>15*6e4){LAST=Date.now();load(false);}});
 setInterval(function(){if(document.visibilityState==='visible'){LAST=Date.now();load(false);}},15*6e4);
 </script>
 </body>
