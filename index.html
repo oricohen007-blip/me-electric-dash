@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Me Electric · כניסות לאתר</title>
+<link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="apple-mobile-web-app-title" content="כניסות לאתר"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E5133A"><meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{--red:#E5133A;--red-d:#B80D2D;--red-t:#FFE9ED;--ink:#1D1D2B;--mut:#77768A;--line:#ECEAF0;--bg:#FAF9FB;--panel:#fff;--ok:#0E9F6E;--ok-t:#E3F6EE;--bar:#D9D6E0;
+  --disp:"Secular One","Assistant",sans-serif;--body:"Assistant","Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #FF8AA0;outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+
+.top{display:flex;align-items:center;gap:12px;padding:14px 26px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.logo{width:38px;height:38px;border-radius:9px;background:var(--red);color:#fff;font:20px/38px var(--disp);text-align:center;flex:none}
+.top h1{font:22px/1 var(--disp);margin:0;font-weight:400}
+.upd{color:var(--mut);font-size:13px}
+.sp{flex:1}
+.rng{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:3px}
+.rng button{border:0;background:transparent;border-radius:8px;padding:6px 12px;font-weight:700;font-size:14px;color:var(--mut);cursor:pointer}
+.rng button.on{background:var(--ink);color:#fff}
+.refresh{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-weight:700;cursor:pointer;text-decoration:none;color:var(--ink);font-size:14px}
+
+.wrap{padding:18px 26px 34px;max-width:1360px;margin:0 auto}
+.head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.head h2{font:28px/1.1 var(--disp);margin:0;font-weight:400}
+.head .clr{border:0;background:var(--red-t);color:var(--red-d);border-radius:8px;padding:3px 10px;font-weight:700;cursor:pointer;font-size:13.5px}
+.note{color:var(--mut);font-size:13px}
+
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.k{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.k span{display:block;color:var(--mut);font-size:13.5px;font-weight:700}
+.k b{display:block;font:34px/1.1 var(--disp);font-weight:400;margin-top:4px}
+.k small{display:block;font-size:12.5px;color:var(--mut);margin-top:3px;min-height:18px}
+.up{color:var(--ok);font-weight:800}.dn{color:var(--red-d);font-weight:800}
+.k.cart b{color:var(--ok)}.k.buy b{color:var(--red)}
+
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px 10px;margin-top:14px}
+.chart h3,.card h3{font:18px/1.2 var(--disp);font-weight:400;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chart h3 .note{font:400 13px var(--body)}
+.lg{display:flex;gap:14px;font:400 12.5px var(--body);color:var(--mut);margin-inline-start:auto}
+.lg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-inline-end:5px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:150px;direction:ltr;border-bottom:2px solid var(--ink)}
+.bc{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;border:0;background:none;padding:0;cursor:pointer;position:relative;min-width:0}
+.bc .bv{width:100%;max-width:26px;background:var(--bar);border-radius:4px 4px 0 0;transition:background .15s}
+.bc .bp{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--red)}
+.bc.in .bv{background:var(--ink)}
+.bc.sel .bv{background:var(--red)}
+.bc:hover .bv{background:#8E8BA0}
+.bc.sel:hover .bv{background:var(--red-d)}
+.xl{display:flex;gap:3px;direction:ltr;margin-top:5px}
+.xl span{flex:1;text-align:center;font-size:11px;color:var(--mut);min-width:0;white-space:nowrap}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;border-radius:9px;padding:7px 10px;font-size:13px;z-index:9;display:none;white-space:nowrap;direction:rtl}
+
+.grid{display:grid;grid-template-columns:1fr minmax(300px,380px);gap:14px;margin-top:14px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.search{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:6px 11px;font:400 14px var(--body);width:min(240px,100%);margin-inline-start:auto}
+.search:focus{background:#fff;outline:none;border-color:#D0CDD8}
+table{width:100%;border-collapse:collapse}
+th{font-size:12.5px;color:var(--mut);font-weight:700;text-align:start;padding:6px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th button{border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer}
+th.on button{color:var(--ink)}
+th.on button:after{content:" ↓"}
+th.n,td.n{text-align:end;width:1%;white-space:nowrap}
+td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.nm{font-weight:600;line-height:1.3}
+td.nm .rk{color:var(--mut);font-weight:700;margin-inline-end:6px;font-size:12.5px}
+td .tr{height:4px;background:#F1F0F4;border-radius:3px;margin-top:5px;overflow:hidden}
+td .tr i{display:block;height:100%;background:var(--ink);border-radius:3px}
+td.c{color:var(--ok);font-weight:800}td.p{color:var(--red);font-weight:800}
+td.z{color:#C3C1CB;font-weight:400}
+.more{display:block;width:100%;border:0;background:#FBFAFD;padding:10px;font-weight:700;color:var(--mut);cursor:pointer;border-radius:0 0 10px 10px;margin-top:4px}
+.src{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 0;border-top:1px solid var(--line);font-size:14.5px}
+.src:first-of-type{border-top:0}
+.src .t{font-weight:700}
+.src .v{font-weight:800}
+.src .tr{grid-column:1/-1;height:6px;border-radius:4px;background:#F1F0F4;overflow:hidden}
+.src .tr i{display:block;height:100%;background:var(--ink);border-radius:4px}
+.src .m{grid-column:1/-1;font-size:12.5px;color:var(--mut)}
+.src .m b{font-weight:800}
+.err{background:var(--red-t);color:var(--red-d);border-radius:12px;padding:16px;margin:20px 26px;font-weight:700}
+.empty{color:var(--mut);text-align:center;padding:24px}
+
+/* עכשיו באתר */
+.live{display:grid;grid-template-columns:auto 1fr minmax(260px,360px);gap:18px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:14px}
+.live .lt{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;color:var(--ok)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(14,159,110,.5);animation:pl 2s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 8px rgba(14,159,110,0)}100%{box-shadow:0 0 0 0 rgba(14,159,110,0)}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.live .big{font:44px/1 var(--disp);margin-top:4px}
+.live small{display:block;color:var(--mut);font-size:12.5px;margin-top:3px}
+.mb{display:flex;align-items:flex-end;gap:2px;height:56px;direction:ltr}
+.mb i{flex:1;background:#BDE8D6;border-radius:2px 2px 0 0;min-height:2px}
+.mb i:last-child{background:var(--ok)}
+.ml{display:flex;justify-content:space-between;direction:ltr;font-size:11px;color:var(--mut);margin-top:4px}
+.now{font-size:13.5px}
+.now .h{color:var(--mut);font-weight:700;font-size:12.5px;margin-bottom:4px}
+.now div.r{display:flex;gap:8px;padding:3px 0;border-top:1px solid var(--line)}
+.now div.r:first-of-type{border-top:0}
+.now .r span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.now .r b{font-weight:800}
+/* שעות */
+.hb{display:flex;align-items:flex-end;gap:2px;height:110px;direction:ltr;border-bottom:2px solid var(--ink)}
+.hb i{flex:1;background:var(--ink);border-radius:3px 3px 0 0;min-height:2px}
+.hb i.pk{background:var(--red)}
+.hl{display:flex;gap:2px;direction:ltr;margin-top:4px}
+.hl span{flex:1;text-align:center;font-size:10.5px;color:var(--mut)}
+/* כל כניסה */
+.chips{display:flex;gap:4px;margin-inline-start:auto}
+.chips button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:3px 11px;font:700 13px var(--body);color:var(--mut);cursor:pointer}
+.chips button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.vt{width:100%}
+.vt td{padding:7px 6px;font-size:14px}
+.vt .tm{font-weight:800;width:1%;white-space:nowrap}
+.vt .sr{white-space:nowrap;width:1%;color:var(--ink)}
+.vt .pg{color:#4A495C;line-height:1.3}
+.vt .dv{color:var(--mut);font-size:12.5px;white-space:nowrap;width:1%}
+.bd{display:inline-block;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:800;margin-inline-start:6px;white-space:nowrap}
+.bd.c{background:var(--ok-t);color:var(--ok)}.bd.p{background:var(--red-t);color:var(--red-d)}
+.x2{color:var(--mut);font-size:12px;font-weight:700;margin-inline-start:4px}
+.grid2{display:grid;grid-template-columns:1fr minmax(300px,380px);gap:14px;margin-top:14px;align-items:start}
+
+@media (max-width:1000px){.grid2{grid-template-columns:1fr}.live{grid-template-columns:auto 1fr}.live .now{grid-column:1/-1}.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}}
+@media (max-width:640px){
+  .top{padding:10px 14px;gap:8px}.top h1{font-size:19px}.upd{width:100%;order:9;font-size:12px}
+  .rng{order:10;width:100%}.rng button{flex:1;padding:7px 4px}
+  .wrap{padding:14px 12px 28px}.head h2{font-size:23px}
+  .kpis{grid-template-columns:1fr 1fr;gap:8px}.k{padding:11px 12px}.k b{font-size:27px}
+  .k:first-child{grid-column:1/-1}
+  .bars{height:110px;gap:2px}.xl span{font-size:10px}
+  .card,.chart{padding:12px}
+  th,td{padding:7px 3px}td.nm{font-size:13.5px}
+  .hide-m{display:none}
+  .lg{width:100%;margin:0}
+  .search{width:100%}
+  .live{grid-template-columns:1fr;gap:10px;padding:12px}.live .big{font-size:38px}
+  .vt td{padding:7px 3px;font-size:13.5px}.vt .dv{display:none}
+  .vt .sr{white-space:normal;font-size:12.5px;color:var(--mut);width:auto;min-width:64px}
+  .chips{width:100%;margin:0}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">Me</div>
+  <h1>כניסות לאתר</h1>
+  <span class="upd" id="upd"></span>
+  <span class="sp"></span>
+  <div class="rng" id="rng" role="group" aria-label="תקופה">
+    <button data-r="d1">היום</button><button data-r="y">אתמול</button><button data-r="d7" class="on">7 ימים</button><button data-r="d30">30 יום</button>
+  </div>
+  <a class="refresh" id="fresh" target="_top">רענון</a>
+</header>
+<div id="app"></div>
+<div class="tip" id="tip"></div>
+<script>
+
+var API='https://script.google.com/macros/s/AKfycbwaxL4rS7PkT9G08Pbg-AP-wJMZMbeMAVnExfJBczE5d10XK3lVU59XRU6Fm4mexXsZ6Q/exec';
+function key(){var m=(location.hash+location.search).match(/[#&?]k=([0-9a-f]+)/);if(m){try{localStorage.setItem('mek',m[1]);}catch(e){}return m[1];}try{return localStorage.getItem('mek');}catch(e){return null;}}
+function msg(t){document.getElementById('app').innerHTML='<div class="err" style="margin:26px">'+t+'</div>';}
+function load(fresh){
+  var k=key(); if(!k){msg('חסר מפתח בקישור.');return;}
+  if(!fresh)msg('טוען נתונים…'); else document.getElementById('upd').textContent='מרענן…';
+  fetch(API+'?format=json&k='+k+(fresh?'&fresh=1':''),{cache:'no-store'})
+    .then(function(r){return r.text();})
+    .then(function(t){var D;try{D=JSON.parse(t);}catch(e){msg(t.indexOf('אין גישה')>=0?'אין גישה. המפתח בקישור לא נכון.':'לא הצלחתי לטעון. נסו לרענן.');return;}boot(D);})
+    .catch(function(){msg('לא הצלחתי לטעון. בדקו חיבור לאינטרנט ונסו שוב.');});
+}
+function boot(D){
+if(D.names){var _ta=document.createElement('textarea');D.names=D.names.map(function(n){if(n.indexOf('&')<0)return n;_ta.innerHTML=n;return _ta.value;});}
+if(D.names)D.items=(D.items||[]).map(function(r){return [r[0],D.names[r[1]],r[2],r[3],r[4],r[5]];});
+(function(){
+var app=document.getElementById('app'), tip=document.getElementById('tip');
+if(D.error){app.innerHTML='<div class="err">לא הצלחתי לקרוא מ-Google Analytics: '+esc(D.error)+'</div>';return;}
+var HEB_D=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]});}
+function fmt(n){return Math.round(n).toLocaleString('he-IL');}
+function ils(n){return '₪'+fmt(n);}
+function dt(s){return new Date(+s.slice(0,4),+s.slice(4,6)-1,+s.slice(6,8));}
+function ds(d){return d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2);}
+function add(s,n){var d=dt(s);d.setDate(d.getDate()+n);return ds(d);}
+function nice(s){var d=dt(s);return 'יום '+HEB_D[d.getDay()]+' '+d.getDate()+'.'+(d.getMonth()+1);}
+
+var T=D.today, ALL=[];for(var i=29;i>=0;i--)ALL.push(add(T,-i));
+var byDay={};D.days.forEach(function(r){byDay[r[0]]={s:r[1],u:r[2],c:r[3],p:r[4],r:r[5]};});
+var state={r:'d7',day:null,sort:'v',q:'',n:25,vf:'all',vn:15};
+
+function span(){ if(state.day)return[state.day,state.day];
+  return {d1:[T,T],y:[add(T,-1),add(T,-1)],d7:[add(T,-6),T],d30:[add(T,-29),T]}[state.r];}
+function prev(a,b){var len=(dt(b)-dt(a))/864e5+1;return[add(a,-len),add(b,-len)];}
+function inR(d,a,b){return d>=a&&d<=b;}
+function tot(a,b){var t={s:0,c:0,p:0,r:0};
+  Object.keys(byDay).forEach(function(d){if(inR(d,a,b)){var x=byDay[d];t.s+=x.s;t.c+=x.c;t.p+=x.p;t.r+=x.r;}});return t;}
+
+function srcName(s,m){s=(s||'').toLowerCase();m=(m||'').toLowerCase();
+  var paid=/cpc|ppc|paid|ads?$|cpm/.test(m);
+  if(s==='(direct)')return'ישיר (הקלידו כתובת / שמרו)';
+  if(/google/.test(s))return paid?'גוגל ממומן':(m==='organic'?'גוגל אורגני':'גוגל ('+m+')');
+  if(/facebook|fb|instagram|^ig$|meta/.test(s))return paid?'פייסבוק ואינסטגרם ממומן':'פייסבוק ואינסטגרם';
+  if(/chatgpt|openai/.test(s))return'ChatGPT';
+  if(/gemini/.test(s))return'Gemini';
+  if(/zap\.co\.il|^zap/.test(s))return'זאפ';
+  if(/bing/.test(s))return'בינג';
+  if(/whatsapp|wa\.me/.test(s))return'וואטסאפ';
+  if(/me-electric/.test(s))return'מתוך האתר';
+  if(s==='(not set)'||s==='(data not available)'||!s)return'לא ידוע';
+  return s;}
+
+function pageName(p){p=p||'';try{p=decodeURIComponent(p);}catch(e){}
+  var l=p.toLowerCase();
+  if(l==='/'||l===''||/^\/default\.asp/.test(l)||l==='(not set)')return'דף הבית';
+  var M={'club.asp':'מועדון לקוחות','userpage.asp':'אזור אישי','cart.asp':'סל קניות','basket.asp':'סל קניות','search.asp':'חיפוש'};
+  var f=l.replace(/^\//,'');if(M[f])return M[f];
+  var m=p.match(/^\/product\/(.+)$/i);if(m)return m[1].replace(/-/g,' ');
+  m=p.match(/^\/(?:category|cat|categories)\/(.+)$/i);if(m)return'קטגוריה · '+m[1].replace(/-/g,' ');
+  m=p.match(/^\/page\/(.+)$/i);if(m)return'דף · '+m[1].replace(/-/g,' ');
+  return p.replace(/^\//,'').replace(/-/g,' ');}
+function hm(s){return s.slice(8,10)+':'+s.slice(10,12);}
+var VIS=(D.visits||[]).map(function(r){var sm=(D.vsrc[r[1]]||'|').split('|');return{t:r[0],d:r[0].slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(D.vpage[r[2]]),dv:r[3],s:r[4],c:r[5],p:r[6]};});
+function liveHtml(){var R=D.rt;if(!R)return'';
+  if(R.error)return'<div class="live"><div><div class="lt"><span class="dot"></span>עכשיו באתר</div><small>לא הצלחתי לקרוא: '+esc(R.error)+'</small></div></div>';
+  var mm=[];for(var i=0;i<30;i++)mm.push(0);(R.mins||[]).forEach(function(r){var i=+r[0];if(i>=0&&i<30)mm[i]+=r[1];});
+  var mx=Math.max.apply(null,mm.concat([1])),bars='';for(var j=29;j>=0;j--)bars+='<i style="height:'+Math.max(3,mm[j]/mx*100)+'%" title="לפני '+j+' דק׳: '+mm[j]+'"></i>';
+  var dv={};(R.dev||[]).forEach(function(r){dv[r[0]]=r[1];});var mob=dv.mobile||0;
+  var at=new Date(R.at).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+  var h='<div class="live"><div><div class="lt"><span class="dot"></span>עכשיו באתר</div><div class="big num">'+fmt(R.total)+'</div><small>ב-30 הדקות האחרונות'+(R.total?' · '+Math.round(mob/R.total*100)+'% בנייד':'')+' · נכון ל-'+at+'</small></div>';
+  h+='<div><div class="mb">'+bars+'</div><div class="ml"><span>לפני 30 דק׳</span><span>עכשיו</span></div></div>';
+  h+='<div class="now"><div class="h">מה רואים עכשיו</div>';
+  var pg=(R.pages||[]).filter(function(r){return r[0]&&r[0]!=='(not set)'&&r[0]!=='(other)';}).slice(0,5);
+  if(!pg.length)h+='<div class="r"><span>אין כרגע אף אחד באתר</span></div>';
+  pg.forEach(function(r){var n=r[0].replace(/\s*[|–-]\s*(me[- ]?electric|מי אלקטריק|חשמל לבית).*$/i,'');if(/^me[- ]?electric\b/i.test(n.trim()))n='דף הבית';h+='<div class="r"><span title="'+esc(r[0])+'">'+esc(n)+'</span><b class="num">'+r[1]+'</b></div>';});
+  return h+'</div></div>';}
+function hoursHtml(a,b){var hh=[];for(var i=0;i<24;i++)hh.push(0);
+  (D.hours||[]).forEach(function(r){var d=r[0].slice(0,8);if(inR(d,a,b))hh[+r[0].slice(8,10)]+=r[1];});
+  var mx=Math.max.apply(null,hh.concat([1])),pk=hh.indexOf(Math.max.apply(null,hh)),sum=hh.reduce(function(x,y){return x+y;},0);
+  var h='<div class="card"><h3>באילו שעות נכנסים'+(sum?'<span class="note">הכי עמוס: '+pk+':00–'+(pk+1)+':00</span>':'')+'</h3><div class="hb">';
+  hh.forEach(function(v,i){h+='<i class="'+(i===pk&&sum?'pk':'')+'" style="height:'+Math.max(2,v/mx*100)+'%" title="'+i+':00 · '+fmt(v)+' כניסות"></i>';});
+  h+='</div><div class="hl">';for(var j=0;j<24;j++)h+='<span>'+(j%3===0?j:'')+'</span>';
+  return h+'</div></div>';}
+function visitsHtml(){var Y=add(T,-1),day;
+  if(state.day)day=(state.day===T||state.day===Y)?state.day:null;
+  else day=state.r==='y'?Y:T;
+  if(day===T&&!state.day&&!VIS.some(function(v){return v.d===T;}))day=Y;
+  var h='<div class="card"><h3>כל כניסה'+(day?' · '+(day===T?'היום':day===Y?'אתמול':nice(day)):'')+
+    '<span class="chips" id="vf"><button data-f="all" class="'+(state.vf==='all'?'on':'')+'">הכול</button><button data-f="c" class="'+(state.vf==='c'?'on':'')+'">הוסיפו לסל או קנו</button></span></h3>';
+  if(!day)return h+'<div class="empty">רשימה של כל כניסה יש רק להיום ולאתמול</div></div>';
+  var L=VIS.filter(function(v){return v.d===day&&(state.vf==='all'||v.c||v.p);});
+  var last=VIS.filter(function(v){return v.d===day;})[0];
+  h+='<div class="note" style="margin:-4px 0 6px">'+(last?'הכניסה האחרונה שנקלטה: '+hm(last.t)+(day===T?' · Analytics מתעדכן באיחור של 2–3 שעות':''):'')+'</div>';
+  if(!L.length)return h+'<div class="empty">אין כניסות להצגה</div></div>';
+  var DV={m:'נייד',d:'מחשב',t:'טאבלט'};
+  h+='<table class="vt"><tbody>';
+  L.slice(0,state.vn).forEach(function(v){
+    h+='<tr><td class="tm num">'+hm(v.t)+'</td><td class="sr">'+esc(v.src)+'</td><td class="pg">'+esc(v.pg)+(v.s>1?'<span class="x2">×'+v.s+'</span>':'')+
+      (v.c?'<span class="bd c">הוסיף לסל</span>':'')+(v.p?'<span class="bd p">קנה</span>':'')+'</td><td class="dv">'+(DV[v.dv]||'')+'</td></tr>';});
+  h+='</tbody></table>';
+  if(L.length>state.vn)h+='<button class="more" id="vmore">עוד '+Math.min(30,L.length-state.vn)+' מתוך '+fmt(L.length)+'</button>';
+  return h+'</div>';}
+
+function delta(cur,old){ if(!old)return''; var p=Math.round((cur-old)/old*100); if(!p)return'<span>כמו קודם</span>';
+  return '<span class="'+(p>0?'up':'dn')+'">'+(p>0?'▲ ':'▼ ')+Math.abs(p)+'%</span> מהתקופה הקודמת';}
+
+function render(){
+  var sp=span(),a=sp[0],b=sp[1],t=tot(a,b),pv=prev(a,b),hasPrev=pv[0]>=ALL[0],o=hasPrev?tot(pv[0],pv[1]):null;
+  var users=state.day?(byDay[state.day]||{}).u||0:(D.users[state.r]||0);
+  var title=state.day?nice(state.day):{d1:'היום',y:'אתמול',d7:'7 הימים האחרונים',d30:'30 הימים האחרונים'}[state.r];
+  var conv=t.s?(t.p/t.s*100):0, cconv=t.s?(t.c/t.s*100):0;
+  var h='<div class="wrap">'+liveHtml()+'<div class="head"><h2>'+title+'</h2>'+(state.day?'<button class="clr" id="clr">✕ חזרה ל-30 יום</button>':'')+
+    '<span class="note">רק me-electric.co.il · '+(sp[1]===T?'היום מתעדכן באיחור של כמה שעות':'')+'</span></div>';
+  h+='<div class="kpis">'+
+    k('כניסות לאתר',fmt(t.s),hasPrev?delta(t.s,o.s):'')+
+    k('גולשים',fmt(users),'אנשים שונים')+
+    k('הוספות לסל',fmt(t.c),cconv.toFixed(1)+'% מהכניסות','cart')+
+    k('קניות',fmt(t.p),conv.toFixed(2)+'% מהכניסות קנו','buy')+
+    k('הכנסות',ils(t.r),hasPrev?delta(t.r,o.r):'')+'</div>';
+  // chart
+  var mx=Math.max.apply(null,ALL.map(function(d){return(byDay[d]||{}).s||0;}).concat([1]));
+  h+='<div class="chart"><h3>כניסות בכל יום <span class="note">לחיצה על יום מציגה רק אותו</span><span class="lg"><span><i style="background:var(--ink)"></i>כניסות</span><span><i style="background:var(--red);border-radius:50%"></i>יש קניות</span></span></h3><div class="bars">';
+  ALL.forEach(function(d){var x=byDay[d]||{s:0,c:0,p:0,r:0},hp=Math.max(2,x.s/mx*100);
+    h+='<button class="bc'+(state.day===d?' sel':(!state.day&&inR(d,a,b)?' in':''))+'" data-d="'+d+'" aria-label="'+nice(d)+': '+fmt(x.s)+' כניסות"><span class="bv" style="height:'+hp+'%"></span>'+
+      (x.p?'<span class="bp" style="bottom:calc('+hp+'% + 5px)"></span>':'')+'</button>';});
+  h+='</div><div class="xl">';
+  ALL.forEach(function(d,i){var dd=dt(d);h+='<span>'+((i%(innerWidth<640?5:3)===0||i===29)?dd.getDate()+'.'+(dd.getMonth()+1):'')+'</span>';});
+  h+='</div></div>';
+  h+='<div class="grid2">'+visitsHtml()+hoursHtml(a,b)+'</div>';
+  // models
+  var it={};D.items.forEach(function(r){if(!inR(r[0],a,b))return;var n=r[1];if(!n||n==='(not set)')return;
+    var x=it[n]||(it[n]={n:n,v:0,c:0,p:0,r:0});x.v+=r[2];x.c+=r[3];x.p+=r[4];x.r+=r[5];});
+  var list=Object.keys(it).map(function(n){return it[n];}).filter(function(x){return x.v||x.c||x.p;});
+  var q=state.q.trim().toLowerCase();if(q)list=list.filter(function(x){return x.n.toLowerCase().indexOf(q)>-1;});
+  list.sort(function(x,y){return y[state.sort]-x[state.sort]||y.v-x.v;});
+  var vmax=Math.max.apply(null,list.map(function(x){return x[state.sort];}).concat([1]));
+  h+='<div class="grid"><div class="card"><h3>אילו דגמים <span class="note">'+list.length+' דגמים</span><input class="search" id="q" placeholder="חיפוש דגם…" value="'+esc(state.q)+'"></h3>';
+  if(!list.length)h+='<div class="empty">אין נתוני דגמים בתקופה הזאת</div>';
+  else{h+='<table><thead><tr><th>דגם</th>'+th('v','צפיות')+th('c','לסל')+th('p','קנו')+th('r','הכנסות',' hide-m')+'</tr></thead><tbody>';
+    list.slice(0,state.n).forEach(function(x,i){
+      h+='<tr><td class="nm"><span class="rk">'+(i+1)+'</span>'+esc(x.n)+'<div class="tr"><i style="width:'+(x[state.sort]/vmax*100)+'%"></i></div></td>'+
+        '<td class="n num">'+fmt(x.v)+'</td><td class="n num '+(x.c?'c':'z')+'">'+fmt(x.c)+'</td><td class="n num '+(x.p?'p':'z')+'">'+fmt(x.p)+'</td><td class="n num hide-m'+(x.r?'':' z')+'">'+(x.r?ils(x.r):'–')+'</td></tr>';});
+    h+='</tbody></table>';
+    if(list.length>state.n)h+='<button class="more" id="more">עוד '+Math.min(25,list.length-state.n)+' דגמים</button>';}
+  h+='</div>';
+  // sources
+  var so={};D.src.forEach(function(r){if(!inR(r[0],a,b))return;var n=srcName(r[1],r[2]);var x=so[n]||(so[n]={n:n,s:0,c:0,p:0,r:0});x.s+=r[3];x.c+=r[4];x.p+=r[5];x.r+=r[6];});
+  var sl=Object.keys(so).map(function(n){return so[n];}).sort(function(x,y){return y.s-x.s;});
+  // מקורות קטנים (פחות מ-1% מהכניסות) נכנסים לשורה אחת "אחרים"
+  var big=[],oth={n:'אחרים',s:0,c:0,p:0,r:0};sl.forEach(function(x){if(big.length<9&&(x.s>=t.s*0.01||x.p))big.push(x);else{oth.s+=x.s;oth.c+=x.c;oth.p+=x.p;oth.r+=x.r;}});
+  if(oth.s)big.push(oth);sl=big;
+  var smax=Math.max.apply(null,sl.map(function(x){return x.s;}).concat([1]));
+  h+='<div class="card"><h3>מאיפה הגיעו</h3>';
+  if(!sl.length)h+='<div class="empty">אין נתונים</div>';
+  sl.forEach(function(x){h+='<div class="src"><span class="t">'+esc(x.n)+'</span><span class="v num">'+fmt(x.s)+'</span><span class="tr"><i style="width:'+(x.s/smax*100)+'%"></i></span>'+
+    '<span class="m">'+(t.s?Math.round(x.s/t.s*100):0)+'% מהכניסות · לסל <b>'+fmt(x.c)+'</b> · קנו <b>'+fmt(x.p)+'</b>'+(x.r?' · '+ils(x.r):'')+'</span></div>';});
+  h+='</div></div></div>';
+  app.innerHTML=h;
+  bind();
+}
+function k(l,v,s,c){return'<div class="k '+(c||'')+'"><span>'+l+'</span><b class="num">'+v+'</b><small>'+(s||'')+'</small></div>';}
+function th(key,l,cls){return'<th class="n'+(cls||'')+(state.sort===key?' on':'')+'"><button data-s="'+key+'">'+l+'</button></th>';}
+
+function bind(){
+  [].forEach.call(document.querySelectorAll('.bc'),function(el){
+    el.onclick=function(){state.day=state.day===el.dataset.d?null:el.dataset.d;if(state.day)setR(null);else setR('d30');state.n=25;render();};
+    el.onmousemove=function(e){var x=byDay[el.dataset.d]||{s:0,c:0,p:0,r:0};tip.innerHTML='<b>'+nice(el.dataset.d)+'</b><br>'+fmt(x.s)+' כניסות · '+fmt(x.c)+' לסל · '+fmt(x.p)+' קניות'+(x.r?' · '+ils(x.r):'');
+      tip.style.display='block';var w=tip.offsetWidth;tip.style.left=Math.min(innerWidth-w-8,Math.max(8,e.clientX-w/2))+'px';tip.style.top=(e.clientY-58)+'px';};
+    el.onmouseleave=function(){tip.style.display='none';};});
+  [].forEach.call(document.querySelectorAll('th button'),function(el){el.onclick=function(){state.sort=el.dataset.s;render();};});
+  [].forEach.call(document.querySelectorAll('#vf button'),function(el){el.onclick=function(){state.vf=el.dataset.f;state.vn=15;render();};});
+  var vm=document.getElementById('vmore');if(vm)vm.onclick=function(){state.vn+=30;render();};
+  var m=document.getElementById('more');if(m)m.onclick=function(){state.n+=25;render();};
+  var c=document.getElementById('clr');if(c)c.onclick=function(){state.day=null;setR('d30');render();};
+  var q=document.getElementById('q');if(q){q.oninput=function(){state.q=q.value;state.n=25;render();var nq=document.getElementById('q');nq.focus();nq.setSelectionRange(nq.value.length,nq.value.length);};}
+}
+function setR(r){state.r=r||state.r;[].forEach.call(document.querySelectorAll('#rng button'),function(b){b.classList.toggle('on',!!r&&b.dataset.r===r);});}
+[].forEach.call(document.querySelectorAll('#rng button'),function(b){b.onclick=function(){state.day=null;state.n=25;setR(b.dataset.r);render();};});
+var g=new Date(D.gen),mins=Math.round((Date.now()-g)/6e4);
+document.getElementById('upd').textContent='נתונים מ-'+g.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})+' · מתרענן כל 15 דקות';
+var fr=document.getElementById('fresh');
+fr.href='#';fr.removeAttribute('target');fr.onclick=function(ev){ev.preventDefault();load(true);};
+render();
+})();
+}
+load(false);
+</script>
+</body>
+</html>
