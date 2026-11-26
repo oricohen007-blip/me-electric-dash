@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Me הבוט · שיחות ולידים</title>
+<link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png"><meta name="apple-mobile-web-app-title" content="לידים"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#E5133A"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{--red:#E5133A;--red-d:#B80D2D;--red-t:#FFE9ED;--ink:#1D1D2B;--mut:#77768A;--line:#ECEAF0;--bg:#FAF9FB;--panel:#fff;--ok:#0E9F6E;--ok-t:#E3F6EE;--wa:#1FAF55;
+  --disp:"Secular One","Assistant",sans-serif;--body:"Assistant","Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #FF8AA0;outline-offset:2px;border-radius:8px}
+.demo{background:#FFF4CC;color:#6B5200;text-align:center;padding:5px;font-size:13px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;padding:14px 26px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.logo{width:38px;height:38px;border-radius:9px;background:var(--red);color:#fff;font:22px/38px var(--disp);text-align:center;letter-spacing:-.5px;flex:none}
+.top h1{font:22px/1 var(--disp);margin:0;font-weight:400}
+.live{display:inline-flex;align-items:center;gap:7px;color:var(--mut);font-size:13px;margin-inline-start:6px}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(14,159,110,.5);animation:pulse 2.4s infinite}
+.live.err i{background:var(--red);animation:none}
+.live.err{color:var(--red-d)}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(14,159,110,0)}100%{box-shadow:0 0 0 0 rgba(14,159,110,0)}}
+.sp{flex:1}
+.search{width:min(320px,40vw);border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 12px}
+.search:focus{background:#fff;border-color:#D9D6E0;outline:none}
+.refresh{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+.refresh svg{width:16px;height:16px;transition:transform .5s}
+.refresh.spin svg{transform:rotate(-360deg)}
+
+/* day strip: the signature */
+.day{padding:18px 26px 6px}
+.day-h{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.day-h h2{font:30px/1.1 var(--disp);margin:0;font-weight:400}
+.day-h .facts{color:var(--mut);font-size:14px}
+.day-h .facts b{color:var(--ink);font-weight:800}
+.strip{position:relative;display:grid;grid-template-columns:repeat(24,1fr);margin-top:14px;height:64px;border-bottom:2px solid var(--ink)}
+.hr{position:relative;display:flex;flex-direction:column-reverse;align-items:center;gap:3px;padding-bottom:5px;border-right:1px dashed #E6E3EA}
+.hr:first-child{border-right:0}
+.hr span{position:absolute;bottom:-22px;font-size:11px;color:var(--mut)}
+.dot{width:10px;height:10px;border-radius:50%;background:#C9C6D1;border:0;padding:0;cursor:pointer;flex:none}
+.dot.ph{background:var(--red);width:12px;height:12px}
+.dot.cart{background:var(--ok)}
+.dot:hover{transform:scale(1.35)}
+.now{position:absolute;top:0;bottom:-2px;width:2px;background:var(--red);pointer-events:none}
+.now:after{content:"עכשיו";position:absolute;top:-2px;right:5px;font-size:11px;color:var(--red);font-weight:700;white-space:nowrap}
+.legend{display:flex;gap:16px;justify-content:flex-start;margin-top:28px;font-size:12.5px;color:var(--mut)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px;vertical-align:0}
+
+/* main grid */
+.main{display:grid;grid-template-columns:minmax(330px,400px) 1fr minmax(250px,300px);gap:22px;padding:14px 26px 30px;align-items:start}
+.col h3{font:18px/1.2 var(--disp);font-weight:400;margin:6px 0 10px;display:flex;align-items:center;gap:8px}
+.cnt{font:700 12px/1 var(--body);background:var(--red);color:#fff;border-radius:999px;padding:4px 8px}
+.cnt.z{background:#E7E5EC;color:var(--mut)}
+
+/* call queue */
+.queue{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.tk{background:var(--panel);border:1px solid var(--line);border-inline-start:5px solid var(--red);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:start;width:100%}
+.tk.sel{border-color:var(--red);box-shadow:0 0 0 3px var(--red-t)}
+.tk-top{display:flex;align-items:baseline;gap:8px}
+.tk-ph{font:21px/1.1 var(--disp);direction:ltr;unicode-bidi:isolate}
+.tk-nm{font-weight:700;color:var(--mut)}
+.wait{margin-inline-start:auto;font-weight:800;font-size:13px;color:var(--red-d);white-space:nowrap}
+.wait.old{background:var(--red);color:#fff;border-radius:6px;padding:1px 7px}
+.tk-what{margin-top:3px;color:#45445A}
+.tk-acts{display:flex;gap:8px;margin-top:10px}
+.a{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:9px;padding:8px 13px;font-weight:800;font-size:14px;text-decoration:none;cursor:pointer}
+.a svg{width:16px;height:16px}
+.a.wa{background:var(--wa);color:#fff}.a.call{background:var(--ink);color:#fff}.a.done{background:#F1F0F4;color:var(--ink)}.a.done.on{background:var(--ok-t);color:var(--ok)}
+.calm{background:var(--panel);border:1px dashed #DAD7E1;border-radius:12px;padding:18px;color:var(--mut);text-align:center}
+
+/* all list */
+.tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;border-radius:8px;padding:5px 10px;font-weight:700;font-size:13.5px;color:var(--mut);cursor:pointer}
+.tabs button.on{background:var(--ink);color:#fff}
+.list{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.it{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;padding:10px 12px;border:0;border-bottom:1px solid var(--line);background:none;width:100%;text-align:start;cursor:pointer}
+.it:last-child{border-bottom:0}
+.it:hover{background:#FBFAFD}
+.it.sel{background:var(--red-t)}
+.it .d{width:9px;height:9px;border-radius:50%;background:#C9C6D1;grid-row:span 2}
+.it .d.ph{background:var(--red)}.it .d.cart{background:var(--ok)}
+.it .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .w{font-size:12px;color:var(--mut);white-space:nowrap}
+.it .m{grid-column:2/-1;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{display:block;width:100%;border:0;background:#FBFAFD;padding:10px;font-weight:700;color:var(--mut);cursor:pointer}
+
+/* reader */
+.reader{background:var(--panel);border:1px solid var(--line);border-radius:14px;min-height:420px;position:sticky;top:84px;max-height:calc(100vh - 104px);display:flex;flex-direction:column}
+.r-head{padding:18px 22px 14px;border-bottom:1px solid var(--line)}
+.r-who{font:26px/1.1 var(--disp);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.r-who .ph{direction:ltr;unicode-bidi:isolate}
+.r-meta{color:var(--mut);font-size:13.5px;margin-top:4px}
+.r-meta bdi{direction:ltr}
+.r-sum{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pill{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 9px;font-size:13.5px}
+.pill b{font-weight:800}
+.pill.cart{background:var(--ok-t);border-color:#BFE8D6;color:#0A6E4C}
+.r-acts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.chat{padding:18px 22px 24px;overflow:auto;display:flex;flex-direction:column;gap:8px;flex:1}
+.b{max-width:80%;padding:8px 13px;border-radius:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.b.bot{background:#F3F2F6;align-self:flex-start;border-start-start-radius:4px}
+.b.me{background:var(--ink);color:#fff;align-self:flex-end;border-start-end-radius:4px}
+.b.miss{box-shadow:inset 0 0 0 2px #FFC2CE}
+.prod{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:7px;padding:1px 7px;margin:3px 0 0 4px;font-size:13.5px}
+.empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--mut);padding:40px;text-align:center}
+
+/* brain */
+.brain section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.brain h4{margin:0 0 10px;font-size:14.5px;font-weight:800}
+.bar{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin-bottom:9px;font-size:14px}
+.bar .tr{grid-column:1/-1;height:7px;border-radius:4px;background:#F1F0F4;overflow:hidden}
+.bar .tr i{display:block;height:100%;background:var(--ink);border-radius:4px}
+.bar:first-of-type .tr i{background:var(--red)}
+.bar small{color:var(--mut)}
+.funnel{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
+.funnel div{background:var(--bg);border-radius:9px;padding:8px 4px}
+.funnel b{display:block;font:22px/1.1 var(--disp);font-weight:400}
+.funnel span{font-size:12px;color:var(--mut)}
+.q{font-size:14px;padding:7px 0;border-top:1px solid var(--line);cursor:pointer}
+.q:first-of-type{border-top:0}
+.q:hover{color:var(--red-d)}
+.hint{color:var(--mut);font-size:13px}
+kbd{font:12px var(--body);background:#F1F0F4;border-radius:4px;padding:1px 5px}
+
+
+/* by day */
+.dk{margin:8px 26px 4px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px 14px}
+.dk-h{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
+.dk-h h2{font:20px/1.1 var(--disp);font-weight:400;margin:0}
+.dk-sum{color:var(--mut);font-size:14px}
+.dk-sum b{color:var(--ink);font-weight:800}
+.dk-rng{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-inline-start:auto}
+.dk-rng button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-weight:700;font-size:13.5px;color:var(--mut);cursor:pointer}
+.dk-rng button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.dk-rng label{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--mut)}
+.dk-rng input{border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:var(--bg);font-size:13px;min-width:0}
+.dk-chart{display:flex;align-items:flex-end;gap:4px;height:150px;margin-top:18px;padding-top:18px;border-bottom:2px solid var(--ink)}
+.dk-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;border:0;background:none;padding:0;cursor:pointer;position:relative;border-radius:6px 6px 0 0}
+.dk-col:hover{background:#F6F5F9}
+.dk-col.sel{background:var(--red-t)}
+.dk-n{font-size:11.5px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:3px;white-space:nowrap}
+.dk-n.z{color:#C9C6D1;font-weight:600}
+.dk-bar{width:min(70%,26px);background:#D9D6E0;border-radius:4px 4px 0 0;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;min-height:0}
+.dk-lead{background:var(--red);width:100%}
+.dk-x{display:flex;gap:4px;margin-top:5px}
+.dk-x span{flex:1;min-width:0;text-align:center;font-size:11px;color:var(--mut);white-space:nowrap;overflow:visible}
+.dk-x span.t{color:var(--red-d);font-weight:800}
+.dk-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12.5px;color:var(--mut)}
+.dk-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.dk-tw{margin-top:14px;max-width:760px;max-height:286px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.dk-t{width:100%;border-collapse:collapse;font-size:14px}
+.dk-t th{position:sticky;top:0;background:#FBFAFD;text-align:start;font-weight:800;font-size:12.5px;color:var(--mut);padding:8px 12px;border-bottom:1px solid var(--line)}
+.dk-t td{padding:7px 12px;border-bottom:1px solid var(--line)}
+.dk-t tr:last-child td{border-bottom:0}
+.dk-t td.num,.dk-t th.num{text-align:center;font-variant-numeric:tabular-nums}
+.dk-t tbody tr{cursor:pointer}
+.dk-t tbody tr:hover{background:#FBFAFD}
+.dk-t tbody tr.sel{background:var(--red-t)}
+.dk-t tbody tr.z td{color:#AAA8B8}
+.dk-t td.ph b{color:var(--red-d)}
+.dk-chip{scroll-margin-top:96px;display:flex;align-items:center;gap:8px;background:var(--red-t);color:var(--red-d);border-radius:10px;padding:7px 10px;margin-bottom:8px;font-weight:700;font-size:13.5px}
+.dk-chip button{margin-inline-start:auto;border:0;background:#fff;color:var(--red-d);border-radius:7px;padding:3px 9px;font-weight:800;cursor:pointer}
+@media(max-width:760px){
+  .dk{margin:8px 14px 4px;padding:14px 12px 12px}.dk-rng{margin:0;width:100%}.dk-rng label{flex:1}.dk-rng input{flex:1;width:100%}
+  .dk-chart{gap:2px;height:130px}.dk-x{gap:2px}.dk-n{font-size:10px}
+  .dk-chart.dense .dk-n{display:none}
+}
+
+@media(max-width:1180px){.main{grid-template-columns:minmax(300px,380px) 1fr}.brain{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.brain section{margin:0}}
+@media(max-width:760px){
+  .top{padding:12px 14px;flex-wrap:wrap;row-gap:8px}.top h1{font-size:19px}.live{order:6;margin:0}.search{order:5;width:100%}
+  .day{padding:14px 14px 4px}.day-h h2{font-size:24px}.strip{height:60px}.hr:nth-child(odd) span{display:none}
+  .main{grid-template-columns:1fr;padding:12px 14px 24px}.reader{position:static;max-height:none}.brain{display:block}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="demo" id="demo" hidden>תצוגה לדוגמה עם נתונים מומצאים. בדשבורד האמיתי יופיעו השיחות מהאתר.</div>
+<header class="top">
+  <div class="logo" aria-hidden="true">ME</div>
+  <h1>הבוט: שיחות ולידים</h1>
+  <span class="live" id="live"><i></i><span id="upd">מחובר</span></span>
+  <span class="sp"></span>
+  <input class="search" id="q" type="search" placeholder="חיפוש טלפון, דגם או קטגוריה" aria-label="חיפוש">
+  <button class="refresh" id="ref" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>רענון</button>
+</header>
+
+<section class="day" aria-label="היום לפי שעות">
+  <div class="day-h"><h2 id="dayTitle">היום</h2><span class="facts" id="dayFacts"></span></div>
+  <div class="strip" id="strip"></div>
+  <div class="legend"><span><i style="background:var(--red)"></i>השאירו טלפון</span><span><i style="background:var(--ok)"></i>הוסיפו לסל</span><span><i style="background:#C9C6D1"></i>שיחה בלבד</span></div>
+</section>
+
+<section class="dk" id="dk" aria-labelledby="dkH">
+  <div class="dk-h">
+    <h2 id="dkH">לפי ימים</h2>
+    <span class="dk-sum" id="dkSum"></span>
+    <div class="dk-rng" role="group" aria-label="טווח תאריכים">
+      <button type="button" data-r="14" class="on">14 יום</button>
+      <button type="button" data-r="30">30 יום</button>
+      <label>מ-<input type="date" id="dkFrom" aria-label="מתאריך"></label>
+      <label>עד <input type="date" id="dkTo" aria-label="עד תאריך"></label>
+    </div>
+  </div>
+  <div class="dk-chart" id="dkChart"></div>
+  <div class="dk-x" id="dkX" aria-hidden="true"></div>
+  <div class="dk-legend"><span><i style="background:#D9D6E0"></i>שיחות</span><span><i style="background:var(--red)"></i>מהן השאירו טלפון</span><span>לחצו על יום כדי לראות את השיחות שלו</span></div>
+  <div class="dk-tw"><table class="dk-t"><thead><tr><th>יום</th><th class="num">שיחות</th><th class="num">השאירו טלפון</th><th class="num">אחוז</th></tr></thead><tbody id="dkBody"></tbody></table></div>
+</section>
+
+<main class="main">
+  <div class="col">
+    <h3>לחזור אליהם <span class="cnt" id="qc">0</span></h3>
+    <div class="queue" id="queue"></div>
+    <h3>השיחות בטווח</h3>
+    <div class="tabs" id="tabs">
+      <button type="button" data-f="all" class="on">הכול</button>
+      <button type="button" data-f="phone">עם טלפון</button>
+      <button type="button" data-f="cart">הוסיפו לסל</button>
+      <button type="button" data-f="done">טופלו</button>
+    </div>
+    <div id="dkChip"></div>
+    <div class="list" id="items"></div>
+  </div>
+  <article class="reader" id="det" aria-live="polite"><div class="empty">בחרו שיחה כדי לקרוא אותה</div></article>
+  <aside class="brain" id="brain"></aside>
+</main>
+
+<script>
+var BOOT=null, API='https://script.google.com/macros/s/AKfycbza6BZjw3xMxWigCGlW6fgElp5DnhbFwW0YG7GttMcOx7Nm2Rhya1gshtMUcJZambSn/exec';
+/* המפתח מגיע בקישור (#k=...), נשמר בדפדפן ונמחק מהכתובת */
+var KEY=(function(){var m=(location.hash+location.search).match(/[#&?]k=([0-9a-f]{32})/);try{if(m){localStorage.setItem('melk',m[1]);history.replaceState(null,'',location.pathname);return m[1]}return localStorage.getItem('melk')||''}catch(e){return m?m[1]:''}})();
+var DEMO=/[?&]demo=1/.test(location.search);
+function api(q){return fetch(API+'?leads=1&k='+KEY+(q||''),{cache:'no-store'}).then(function(r){return r.json()})}
+var live=!!KEY&&!DEMO, rows=[], f='all', sel=null, limit=40, lastOk=0, runBroken=false, lastAct=Date.now(), seenLeads=null;
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function mins(t){return Math.max(0,Math.round((Date.now()-new Date(t))/6e4))}
+function ago(t){var m=mins(t);if(m<1)return'עכשיו';if(m<60)return'לפני '+m+' דק׳';var h=Math.floor(m/60);if(h<24)return'לפני '+h+' שע׳';var d=new Date(t);return d.toLocaleDateString('he-IL',{day:'numeric',month:'numeric'})+' '+d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}
+function waitTxt(t){var m=mins(t);if(m<60)return'מחכה '+m+' דק׳';var h=Math.floor(m/60);return h<24?'מחכה '+h+' שע׳':'מחכה '+Math.floor(h/24)+' ימים'}
+function intl(p){p=String(p).replace(/\D/g,'');return p.indexOf('0')===0?'972'+p.slice(1):p}
+function fmtPh(p){p=String(p||'').replace(/\D/g,'');if(/^5\d{8}$/.test(p))p='0'+p;return p.length===10?p.slice(0,3)+'-'+p.slice(3):p}
+function isToday(t){var d=new Date(t),n=new Date();return d.toDateString()===n.toDateString()}
+function lines(r){return String(r.log||'').split('\n').filter(Boolean)}
+var MISS=/לא בטוח שהבנתי|לא הבנתי/;
+function misses(r){var L=lines(r),out=[];for(var i=1;i<L.length;i++)if(/^בוט:/.test(L[i])&&MISS.test(L[i])&&/^לקוח:/.test(L[i-1]))out.push(L[i-1].replace(/^לקוח:\s*/,''));return out}
+function what(r){var a=[r.cat,r.budget,r.size].filter(Boolean);return a.length?a.join(', '):'עוד לא בחר קטגוריה'}
+var IC={wa:'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>',
+ call:'<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>'};
+var MOBILE=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function waLink(p){p=intl(p);return MOBILE?'href="https://wa.me/'+p+'" target="_blank"':'href="https://web.whatsapp.com/send?phone='+p+'" target="mewa" title="נפתח בוואטסאפ ווב של החנות"'}
+function acts(r){return '<a class="a wa" '+waLink(r.phone)+' rel="noopener" data-stop>'+IC.wa+'וואטסאפ</a><a class="a call" href="tel:'+esc(r.phone)+'" data-stop>'+IC.call+'חיוג</a><button type="button" class="a done'+(r.done?' on':'')+'" data-done="'+esc(r.id)+'" data-stop>'+(r.done?'טופל ✓':'סמן שטופל')+'</button>'}
+
+function draw(){
+  var q=$('q').value.trim(), today=rows.filter(function(r){return isToday(r.time)});
+  /* header facts */
+  var ph=today.filter(function(r){return r.phone}).length, ct=today.filter(function(r){return r.cart}).length;
+  $('dayTitle').textContent=today.length?(today.length===1?'שיחה אחת היום':today.length+' שיחות היום'):'עוד אין שיחות היום';
+  $('dayFacts').innerHTML=today.length?'<b>'+ph+'</b> השאירו טלפון &nbsp; <b>'+ct+'</b> הוסיפו לסל':'הבוט באוויר ומחכה לגולשים';
+  /* strip */
+  var hrs=[];for(var h=0;h<24;h++)hrs.push([]);
+  today.forEach(function(r){hrs[new Date(r.time).getHours()].push(r)});
+  $('strip').innerHTML=hrs.map(function(a,h){return'<div class="hr"><span>'+h+'</span>'+a.slice(0,6).map(function(r){return'<button type="button" class="dot'+(r.phone?' ph':r.cart?' cart':'')+'" data-id="'+esc(r.id)+'" title="'+esc((r.phone?fmtPh(r.phone)+' · ':'')+what(r))+'" aria-label="'+esc(what(r))+'"></button>'}).join('')+'</div>'}).join('')+'<div class="now" style="right:'+((new Date().getHours()+new Date().getMinutes()/60)/24*100)+'%"></div>';
+  /* queue */
+  var Q=rows.filter(function(r){return r.phone&&!r.done}).sort(function(a,b){return new Date(a.time)-new Date(b.time)});
+  $('qc').textContent=Q.length;$('qc').className='cnt'+(Q.length?'':' z');
+  document.title=(Q.length?'('+Q.length+') ':'')+'Me הבוט · שיחות ולידים';
+  $('queue').innerHTML=Q.length?Q.map(function(r){var m=mins(r.time);return'<div class="tk'+(sel===r.id?' sel':'')+'" role="button" tabindex="0" data-id="'+esc(r.id)+'"><div class="tk-top"><span class="tk-ph">'+esc(fmtPh(r.phone))+'</span>'+(r.name?'<span class="tk-nm">'+esc(r.name)+'</span>':'')+'<span class="wait'+(m>=60?' old':'')+'">'+waitTxt(r.time)+'</span></div><div class="tk-what">'+esc(what(r))+(r.cart?' · הוסיף לסל':'')+'</div><div class="tk-acts">'+acts(r)+'</div></div>'}).join(''):'<div class="calm">אין אף אחד שמחכה לטלפון. כשגולש ישאיר מספר, הוא יופיע כאן ראשון.</div>';
+  /* list */
+  var L=rows.filter(function(r){if(dayPick?dkey(r.time)!==dayPick:!inRange(r))return false;if(f==='phone'&&!r.phone)return false;if(f==='cart'&&!r.cart)return false;if(f==='done'&&!r.done)return false;
+    return !q||[r.phone,fmtPh(r.phone),r.name,r.cat,r.shown,r.cart,r.log].join(' ').indexOf(q)>-1});
+  $('items').innerHTML=L.length?L.slice(0,limit).map(function(r){return'<button type="button" class="it'+(sel===r.id?' sel':'')+'" data-id="'+esc(r.id)+'"><span class="d'+(r.phone?' ph':r.cart?' cart':'')+'"></span><span class="t">'+(r.phone?esc(fmtPh(r.phone))+(r.name?' '+esc(r.name):''):esc(r.cat||'גולש'))+'</span><span class="w">'+ago(r.time)+'</span><span class="m">'+esc(r.phone?what(r):(r.budget||r.size?[r.budget,r.size].filter(Boolean).join(', '):'גולש אנונימי'))+(r.done?' · טופל':'')+'</span></button>'}).join('')+(L.length>limit?'<button type="button" class="more" id="more">עוד '+(L.length-limit)+' שיחות</button>':''):'<div class="calm" style="border:0">'+(q?'לא נמצאו שיחות עם "'+esc(q)+'"':'אין עדיין שיחות כאלה')+'</div>';
+  brain();drawDays();
+  if(sel)show(sel,true);
+}
+function brain(){
+  var wk=rows.filter(function(r){return Date.now()-new Date(r.time)<7*864e5}), cats={};
+  wk.forEach(function(r){if(!r.cat)return;var c=cats[r.cat]||(cats[r.cat]={n:0,b:[]});c.n++;var m=String(r.budget||'').replace(/,/g,'').match(/\d{3,6}/);if(m)c.b.push(+m[0])});
+  var C=Object.keys(cats).map(function(k){return[k,cats[k]]}).sort(function(a,b){return b[1].n-a[1].n}).slice(0,5), mx=C.length?C[0][1].n:1;
+  function med(a){if(!a.length)return'';a=a.slice().sort(function(x,y){return x-y});return'תקציב נפוץ: עד ₪'+a[Math.floor(a.length/2)].toLocaleString('he-IL')}
+  var ph=wk.filter(function(r){return r.phone}).length, ct=wk.filter(function(r){return r.cart}).length, pct=function(n){return wk.length?Math.round(n/wk.length*100)+'%':'0%'};
+  var M=[];rows.slice(0,200).forEach(function(r){misses(r).forEach(function(t){M.push([t,r.id])})});
+  $('brain').innerHTML='<section><h4>מה מחפשים השבוע</h4>'+(C.length?C.map(function(c){return'<div class="bar"><span>'+esc(c[0])+' <small>'+med(c[1].b)+'</small></span><b>'+c[1].n+'</b><div class="tr"><i style="width:'+Math.round(c[1].n/mx*100)+'%"></i></div></div>'}).join(''):'<p class="hint">יתמלא אחרי השיחות הראשונות.</p>')+'</section>'+
+   '<section><h4>מתוך '+wk.length+' שיחות השבוע</h4><div class="funnel"><div><b>'+wk.length+'</b><span>שיחות</span></div><div><b>'+pct(ct)+'</b><span>הוסיפו לסל</span></div><div><b>'+pct(ph)+'</b><span>השאירו טלפון</span></div></div></section>'+
+   '<section><h4>שאלות שהבוט לא הבין</h4>'+(M.length?M.slice(0,6).map(function(m){return'<div class="q" data-id="'+esc(m[1])+'">"'+esc(m[0])+'"</div>'}).join('')+'<p class="hint" style="margin:8px 0 0">את אלה כדאי ללמד את הבוט.</p>':'<p class="hint">אין כרגע. כל שאלה שהבוט לא יבין תופיע כאן.</p>')+'</section>'+
+   '<p class="hint" style="padding:0 4px"><kbd>/</kbd> חיפוש · <kbd>R</kbd> רענון · <kbd>J</kbd> <kbd>K</kbd> מעבר בין שיחות</p>';
+}
+function chatHtml(l){var me=/^לקוח:/.test(l), t=l.replace(/^(לקוח|בוט):\s*/,''), miss=!me&&MISS.test(t);
+  var h=esc(t).replace(/\[([^\]]{2,140})\]/g,function(_,p){return'<span class="prod">'+p+'</span>'});
+  return'<div class="b '+(me?'me':'bot')+(miss?' miss':'')+'">'+h+'</div>'}
+function show(id,keep){
+  var r=rows.filter(function(x){return x.id===id})[0];if(!r)return;sel=id;
+  [].forEach.call(document.querySelectorAll('[data-id]'),function(e){if(e.classList.contains('it')||e.classList.contains('tk'))e.classList.toggle('sel',e.dataset.id===id)});
+  var det=$('det'), st=keep?(det.querySelector('.chat')||{}).scrollTop:null;
+  var pills=[r.cat&&'<span class="pill"><b>'+esc(r.cat)+'</b></span>',r.budget&&'<span class="pill">'+esc(r.budget)+'</span>',r.size&&'<span class="pill">'+esc(r.size)+'</span>',r.cart&&'<span class="pill cart">הוסיף לסל: '+esc(r.cart)+'</span>',r.shown&&'<span class="pill">הוצגו: '+esc(r.shown)+'</span>'].filter(Boolean).join('');
+  var page=decodeURIComponent(r.page||'');try{page=decodeURIComponent(page)}catch(e){}
+  det.innerHTML='<div class="r-head"><div class="r-who">'+(r.phone?'<span class="ph">'+esc(fmtPh(r.phone))+'</span>'+(r.name?'<span>'+esc(r.name)+'</span>':''):'גולש אנונימי')+'</div><div class="r-meta">'+ago(r.time)+' · נכנס מ: <bdi>'+esc(page==='/'?'דף הבית':page)+'</bdi></div>'+(pills?'<div class="r-sum">'+pills+'</div>':'')+(r.phone?'<div class="r-acts">'+acts(r)+'</div>':'')+'</div><div class="chat">'+(lines(r).map(chatHtml).join('')||'<div class="empty">השיחה ריקה</div>')+'</div>';
+  var ch=det.querySelector('.chat');if(ch&&st!=null)ch.scrollTop=st;
+}
+function toggleDone(id){var r=rows.filter(function(x){return x.id===id})[0];if(!r)return;r.done=!r.done;if(live)api('&id='+encodeURIComponent(r.id)+'&done='+(r.done?1:0)).then(function(j){if(!j.ok)throw 0}).catch(function(){r.done=!r.done;draw();setLive('לא נשמר. נסו שוב.',true)});draw()}
+
+/* refresh: JSON from Apps Script every 30s */
+function setLive(t,err){$('upd').textContent=t;$('live').classList.toggle('err',!!err)}
+function stamp(){if(!lastOk)return;var s=Math.round((Date.now()-lastOk)/1e3);setLive(s<60?'עודכן לפני '+Math.max(s,1)+' שנ׳':'עודכן לפני '+Math.floor(s/60)+' דק׳')}
+function got(r){var prev=seenLeads;rows=(r||[]).filter(function(x){return !isTestRow(x)});lastOk=Date.now();var leads=rows.filter(function(x){return x.phone}).map(function(x){return x.id});
+  if(prev&&leads.some(function(id){return prev.indexOf(id)<0})){document.title='🔴 ליד חדש · Me הבוט';}
+  seenLeads=leads;draw();stamp()}
+function load(manual){
+  var b=$('ref');b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');
+  if(DEMO){rows=demo().filter(function(x){return !isTestRow(x)});lastOk=Date.now();draw();stamp();return}
+  if(!KEY){draw();setLive('חסר מפתח. פתחו את הדף מהקישור המלא.',true);return}
+  if(manual)setLive('מרענן...');
+  api().then(function(j){if(!j||!j.ok){setLive('הקישור לא תקין. פתחו מהקישור המלא.',true);return}got(j.rows)}).catch(function(){setLive(manual?'אין חיבור. נסו שוב.':'הרענון נכשל, מנסה שוב בעוד חצי דקה.',true)});
+}
+['click','keydown','scroll','mousemove'].forEach(function(e){addEventListener(e,function(){lastAct=Date.now()},{passive:true})});
+document.addEventListener('click',function(e){
+  var d=e.target.closest('[data-done]');if(d){e.stopPropagation();return toggleDone(d.dataset.done)}
+  if(e.target.closest('[data-stop]'))return;
+  if(e.target.id==='more'){limit+=40;return draw()}
+  var t=e.target.closest('#tabs button');if(t){f=t.dataset.f;[].forEach.call($('tabs').children,function(x){x.classList.toggle('on',x===t)});return draw()}
+  var it=e.target.closest('[data-id]');if(it){show(it.dataset.id);if(innerWidth<=760)$('det').scrollIntoView({behavior:'smooth',block:'start'})}
+});
+document.addEventListener('keydown',function(e){
+  if(e.target.tagName==='INPUT'){if(e.key==='Escape'){e.target.value='';draw();e.target.blur()}return}
+  if(e.key==='/'){e.preventDefault();$('q').focus()}
+  else if(e.key==='r'||e.key==='R'||e.key==='ר'){load(true)}
+  else if(e.key==='j'||e.key==='k'||e.key==='ח'||e.key==='ל'){var ids=[].map.call(document.querySelectorAll('#items .it'),function(x){return x.dataset.id}),i=ids.indexOf(sel);i=(e.key==='j'||e.key==='ח')?Math.min(ids.length-1,i+1):Math.max(0,i-1);if(ids[i])show(ids[i])}
+  else if(e.key==='Enter'&&e.target.classList.contains('tk'))show(e.target.dataset.id);
+});
+
+/* ---- לפי ימים: טווח תאריכים, גרף וטבלה. לחיצה על יום מסננת את רשימת השיחות ---- */
+var DAYMS=864e5, rTo=null, rFrom=null, rDays=14, dayPick=null;
+var WD=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+function dkey(t){var d=new Date(t);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function kdate(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function addDays(k,n){var d=kdate(k);d.setDate(d.getDate()+n);return dkey(d)}
+function dmy(k){var d=kdate(k);return d.getDate()+'.'+(d.getMonth()+1)}
+function isTestRow(r){return /^(jobs-test|test-)/i.test(String(r.id))||/בדיקה\s*ג[׳'’]?ובס/.test(String(r.name)+' '+String(r.log))||/^0?500000000$/.test(String(r.phone))}
+function range(){var to=rTo||dkey(Date.now()), from=rFrom||addDays(to,-(rDays-1));if(from>to){var x=from;from=to;to=x}return[from,to]}
+function inRange(r){var k=dkey(r.time),R=range();return k>=R[0]&&k<=R[1]}
+function setRange(days){rDays=days;rTo=null;rFrom=null;dayPick=null;syncRangeUi();draw()}
+function syncRangeUi(){var R=range();$('dkFrom').value=R[0];$('dkTo').value=R[1];
+  [].forEach.call(document.querySelectorAll('.dk-rng button'),function(b){b.classList.toggle('on',!rFrom&&!rTo&&+b.dataset.r===rDays)})}
+function days(){
+  var R=range(),map={},list=[];
+  for(var k=R[0],guard=0;k<=R[1]&&guard<400;k=addDays(k,1),guard++){map[k]={k:k,n:0,ph:0};list.push(map[k])}
+  rows.forEach(function(r){var k=dkey(r.time);if(map[k]){map[k].n++;if(r.phone)map[k].ph++}});
+  return list;
+}
+function drawDays(){
+  var L=days(), mx=Math.max.apply(null,L.map(function(d){return d.n}).concat([1])), today=dkey(Date.now()), dense=L.length>16;
+  var tn=0,tp=0;L.forEach(function(d){tn+=d.n;tp+=d.ph});
+  $('dkSum').innerHTML='<b>'+tn+'</b> שיחות · <b>'+tp+'</b> השאירו טלפון'+(tn?' ('+Math.round(tp/tn*100)+'%)':'')+' · '+dmy(L[0].k)+'–'+dmy(L[L.length-1].k);
+  $('dkChart').classList.toggle('dense',dense);$('dkX').classList.toggle('dense',dense);
+  $('dkChart').innerHTML=L.map(function(d){var h=d.n?Math.max(4,Math.round(d.n/mx*100)):0, lh=d.n?Math.round(d.ph/d.n*100):0,
+    lbl='יום '+WD[kdate(d.k).getDay()]+' '+dmy(d.k)+': '+d.n+' שיחות, '+d.ph+' השאירו טלפון';
+    return'<button type="button" class="dk-col'+(dayPick===d.k?' sel':'')+'" data-day="'+d.k+'" title="'+lbl+'" aria-label="'+lbl+'" aria-pressed="'+(dayPick===d.k)+'"><span class="dk-n'+(d.n?'':' z')+'">'+d.n+'</span><span class="dk-bar" style="height:'+h+'%"><span class="dk-lead" style="height:'+lh+'%"></span></span></button>'}).join('');
+  var step=dense?(innerWidth<=760?5:2):1;
+  $('dkX').innerHTML=L.map(function(d,i){var last=L.length-1-i, show=step===1||d.k===today||(last%step===0&&last>0);
+    return'<span class="'+(d.k===today?'t':'')+'">'+(!show?'':d.k===today?'היום':dmy(d.k))+'</span>'}).join('');
+  $('dkBody').innerHTML=L.slice().reverse().map(function(d){return'<tr class="'+(d.n?'':'z')+(dayPick===d.k?' sel':'')+'" data-day="'+d.k+'" tabindex="0"><td>'+(d.k===today?'היום, ':'יום '+WD[kdate(d.k).getDay()]+', ')+dmy(d.k)+'</td><td class="num">'+d.n+'</td><td class="num ph">'+(d.ph?'<b>'+d.ph+'</b>':'0')+'</td><td class="num">'+(d.n?Math.round(d.ph/d.n*100)+'%':'–')+'</td></tr>'}).join('');
+  var n=dayPick?L.filter(function(d){return d.k===dayPick})[0]:null;
+  $('dkChip').innerHTML=dayPick?'<div class="dk-chip">מציג את יום '+WD[kdate(dayPick).getDay()]+', '+dmy(dayPick)+' · '+(n?n.n:0)+' שיחות<button type="button" id="dkClear">כל הימים</button></div>':'';
+}
+function pickDay(k){dayPick=(dayPick===k)?null:k;f='all';[].forEach.call($('tabs').children,function(x){x.classList.toggle('on',x.dataset.f==='all')});limit=200;draw();
+  if(dayPick){var first=rows.filter(function(r){return dkey(r.time)===dayPick})[0];if(first)show(first.id);$('dkChip').scrollIntoView({behavior:'smooth',block:'start'})}}
+document.addEventListener('click',function(e){
+  var c=e.target.closest('[data-day]');if(c){e.stopPropagation();return pickDay(c.dataset.day)}
+  if(e.target.id==='dkClear'){dayPick=null;limit=40;return draw()}
+  var b=e.target.closest('.dk-rng button');if(b)return setRange(+b.dataset.r);
+},true);
+document.addEventListener('keydown',function(e){var c=e.target.closest&&e.target.closest('tr[data-day]');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();pickDay(c.dataset.day)}},true);
+function onRangeInput(){var a=$('dkFrom').value,b=$('dkTo').value;if(!a||!b)return;rFrom=a;rTo=b;dayPick=null;syncRangeUi();draw()}
+$('dkFrom').onchange=onRangeInput;$('dkTo').onchange=onRangeInput;
+
+$('q').oninput=function(){limit=40;draw()};
+$('ref').onclick=function(){load(true)};
+setInterval(function(){load(false)},3e4);setInterval(stamp,1e4);setInterval(function(){if(rows.length)draw()},6e4);
+
+function demo(){
+  $('demo').hidden=false;
+  var D=[[3,'0521234567','דנה','מכונות כביסה','עד ₪3,000','4-5 נפשות','Bosch WAN28218IT, LG WFS8014WB','', 'בוט: היי, אני Me הבוט. אעזור לבחור בשתי שאלות קצרות. מה מחפשים היום?\nלקוח: מכונת כביסה\nבוט: בשמחה. לכמה נפשות?\nלקוח: 4-5\nבוט: ומה התקציב בערך?\nלקוח: עד 3,000\nבוט: זה הדגם שאנחנו הכי ממליצים עליו. [מכונת כביסה 8 ק"ג Bosch WAN28218IT · ₪2,862]\nבוט: רוצים שנציג יבדוק לכם מלאי ומחיר סופי על הדגם? השאירו טלפון ונחזור אליכם.\nבוט: תודה! קיבלנו את הפרטים, ונציג יחזור אליכם בהקדם.'],
+   [41,'','','מייבשים','','משאבת חום','AEG T8384OBCM','AEG T8384OBCM','בוט: היי, אני Me הבוט. מה מחפשים היום?\nלקוח: מייבש\nבוט: משאבת חום או קונדנסור?\nלקוח: משאבת חום\nבוט: ההמלצה שלי: [מייבש AEG T8384OBCM · ₪4,190]'],
+   [96,'0547654321','יוסי','מקררים','עד ₪6,000','4 דלתות','Samsung RF65, Sharp SJ-GPRN75D','','בוט: איזה מקרר מחפשים?\nלקוח: 4 דלתות עד 6000\nבוט: הנה שניים שמתאימים: [מקרר Samsung RF65 · ₪5,890], [מקרר Sharp SJ-GPRN75D · ₪5,490]\nלקוח: יש הובלה לקומה רביעית בלי מעלית?\nבוט: לא בטוח שהבנתי. מה מחפשים?'],
+   [150,'','','מדיחי כלים','עד ₪2,500','','Bosch SMI4HCS07E','','בוט: מדיח בנוי או עומד?\nלקוח: בנוי\nבוט: ההמלצה שלי: [מדיח Bosch SMI4HCS07E · ₪2,390]'],
+   [210,'','','מכונות כביסה','עד ₪2,000','2-3 נפשות','LG WFS8014WB','','בוט: לכמה נפשות?\nלקוח: 2-3\nבוט: ומה התקציב בערך?\nלקוח: עד 2,000\nבוט: [מכונת כביסה LG WFS8014WB · ₪1,850]'],
+   [330,'0501112233','','טלוויזיות','עד ₪8,000','65 אינץ׳','Samsung QE65S95H','Samsung QE65S95H','בוט: באיזה גודל?\nלקוח: 65\nבוט: ההמלצה שלי: [טלוויזיה Samsung QE65S95H · ₪7,990]\nלקוח: אפשר לשלם ב-36 תשלומים?\nבוט: לא בטוח שהבנתי. מה מחפשים?'],
+   [480,'','','','','','','','בוט: היי, אני Me הבוט. מה מחפשים היום?\nלקוח: מתי אתם פתוחים בשישי\nבוט: לא בטוח שהבנתי. מה מחפשים?'],
+   [1600,'0529876543','רונית','מכונות כביסה','עד ₪3,500','','Bosch WAN28218IT','','בוט: [מכונת כביסה Bosch WAN28218IT · ₪2,862]\nבוט: תודה! קיבלנו את הפרטים.']];
+  var cats=['מכונות כביסה','מקררים','מייבשים','מדיחי כלים','טלוויזיות'], out=[];
+  for(var day=1;day<30;day++){var n=(day*7)%6+(day%3?1:0);for(var j=0;j<n;j++){var t=new Date();t.setDate(t.getDate()-day);t.setHours(9+(j*3+day)%12,(j*17+day*7)%60,0,0);
+    out.push({id:'g'+day+'-'+j,time:t.toISOString(),page:'/',phone:(j===0&&day%4===0)?'05'+(20000000+day*1013+j):'',name:'',cat:cats[(day+j)%5],budget:'',size:'',shown:'',cart:'',log:'לקוח: '+cats[(day+j)%5]+'\nבוט: בשמחה. מה התקציב?',done:true})}}
+  out.push({id:'t1',time:new Date(Date.now()-5*6e4).toISOString(),page:'/',phone:'0500000000',name:'בדיקה ג׳ובס',cat:'מקררים',budget:'',size:'',shown:'',cart:'',log:'לקוח: בדיקה',done:false});
+  return out.concat(D.map(function(d,i){return{id:'d'+i,time:new Date(Date.now()-d[0]*6e4).toISOString(),page:i%2?'/category/מכונות-כביסה':'/',phone:d[1],name:d[2],cat:d[3],budget:d[4],size:d[5],shown:d[6],cart:d[7],log:d[8],done:i===7}}));
+}
+syncRangeUi();
+var firstPick=false, got0=got;got=function(r){got0(r);if(!firstPick){firstPick=true;if(!sel){var first=rows.filter(function(x){return x.phone&&!x.done})[0]||rows[0];if(first)show(first.id)}}};
+load(false);
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&Date.now()-lastOk>2e4)load(false)});
+</script>
+</body>
+</html>
