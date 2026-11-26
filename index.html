@@ -123,7 +123,8 @@ td.z{color:#C3C1CB;font-weight:400}
 .vt .pg{color:#4A495C;line-height:1.3}
 .vt .dv{color:var(--mut);font-size:12.5px;white-space:nowrap;width:1%}
 .bd{display:inline-block;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:800;margin-inline-start:6px;white-space:nowrap}
-.bd.c{background:var(--ok-t);color:var(--ok)}.bd.p{background:var(--red-t);color:var(--red-d)}
+.bd.c{background:var(--ok-t);color:var(--ok)}
+.cm{display:block;margin-top:5px;background:var(--ok-t);border-radius:8px;padding:5px 9px;color:var(--ink);font-size:13px;line-height:1.35}.cm b{display:block;color:var(--ok);font-size:12px}.bd.p{background:var(--red-t);color:var(--red-d)}
 .x2{color:var(--mut);font-size:12px;font-weight:700;margin-inline-start:4px}
 .grid2{display:grid;grid-template-columns:1fr minmax(300px,380px);gap:14px;margin-top:14px;align-items:start}
 
@@ -218,7 +219,8 @@ function srcName(s,m){s=(s||'').toLowerCase();m=(m||'').toLowerCase();
   if(s==='(not set)'||s==='(data not available)'||!s)return'לא ידוע';
   return s;}
 
-function pageName(p){p=p||'';try{p=decodeURIComponent(p);}catch(e){}
+function dec(p){p=String(p||'');for(var n=0;n<2&&/%[0-9a-f]{2}/i.test(p);n++)p=p.replace(/(?:%[0-9a-f]{2})+/gi,function(r){for(var e=r.length;e>0;e-=3){try{return decodeURIComponent(r.slice(0,e));}catch(x){}}return'';}).replace(/%[0-9a-f]?$/i,'');return p.replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/[\u200e\u200f]/g,'');}
+function pageName(p){p=dec(p);
   var l=p.toLowerCase();
   if(l==='/'||l===''||/^\/default\.asp/.test(l)||l==='(not set)')return'דף הבית';
   var M={'club.asp':'מועדון לקוחות','userpage.asp':'אזור אישי','cart.asp':'סל קניות','basket.asp':'סל קניות','search.asp':'חיפוש'};
@@ -230,12 +232,19 @@ function pageName(p){p=p||'';try{p=decodeURIComponent(p);}catch(e){}
 function hm(s){return s.slice(8,10)+':'+s.slice(10,12);}
 var GAV=(D.visits||[]).map(function(r){var sm=(D.vsrc[r[1]]||'|').split('|');return{t:r[0],d:r[0].slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(D.vpage[r[2]]),dv:r[3],s:r[4],c:r[5],p:r[6]};});
 /* רשימת הכניסות: Analytics עד הדקה האחרונה שהוא מסר, ומשם והלאה הכניסות מהמונה שלנו */
-function allVis(){var cut=GAV.length?GAV[0].t:'0',by={},out=[];
-  (HITS||[]).forEach(function(h){var x=by[h[1]]||(by[h[1]]={c:0,p:0});
-    if(h[2]==='s'){x.t=h[0];x.sm=h[3];x.lp=h[4];x.dv=h[5];}else if(h[2]==='c')x.c=1;else if(h[2]==='p')x.p=1;});
-  Object.keys(by).forEach(function(id){var x=by[id];if(!x.t||x.t<=cut||/^mehittest\|/.test(x.sm))return;var sm=x.sm.split('|');
-    out.push({t:x.t,d:x.t.slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(x.lp),dv:x.dv,s:1,c:x.c,p:x.p,live:1});});
-  out.sort(function(a,b){return a.t<b.t?1:-1;});return out.concat(GAV);}
+function allVis(){var by={},out=[],first=null;
+  (HITS||[]).forEach(function(h){var x=by[h[1]]||(by[h[1]]={c:0,p:0,m:[]});if(!first||h[0]<first)first=h[0];
+    if(h[2]==='s'){x.t=h[0];x.sm=h[3];x.lp=h[4];x.dv=h[5];}
+    else if(h[2]==='c'){x.c=1;var nm=modelName(h[4]);if(nm&&x.m.indexOf(nm)<0)x.m.push(nm);if(!x.ct)x.ct=h[0];}
+    else if(h[2]==='p'){x.p=1;x.pv=(x.pv||0)+(+h[6]||0);}});
+  Object.keys(by).forEach(function(id){var x=by[id];if(!x.t||/^mehittest\|/.test(x.sm))return;var sm=x.sm.split('|');
+    out.push({t:x.t,d:x.t.slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(x.lp),dv:x.dv,s:1,c:x.c,p:x.p,m:x.m,ct:x.ct,pv:x.pv,live:1});});
+  out.sort(function(a,b){return a.t<b.t?1:-1;});
+  /* Analytics רק לזמן שלפני שהמונה התחיל (המונה שומר 48 שעות) */
+  var cut=first?first.slice(0,8)+'0000':'0';if(first&&first.slice(8)>'0030')cut=first;
+  return out.concat(GAV.filter(function(v){return v.t<cut;}));}
+/* שם הדגם שהוכנס לסל: המונה שולח את שם המוצר, או את כתובת דף המוצר */
+function modelName(v){v=dec(v);if(!v)return'';var m=v.match(/^\/product\/(.+)$/i);if(m)v=m[1].replace(/-/g,' ');else if(/^\//.test(v))return'';return v.trim().slice(0,90);}
 function liveHtml(){var R=D.rt;if(!R)return'';
   if(R.error)return'<div class="live"><div><div class="lt"><span class="dot"></span>עכשיו באתר</div><small>לא הצלחתי לקרוא: '+esc(R.error)+'</small></div></div>';
   var mm=[];for(var i=0;i<30;i++)mm.push(0);(R.mins||[]).forEach(function(r){var i=+r[0];if(i>=0&&i<30)mm[i]+=r[1];});
@@ -271,7 +280,7 @@ function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0
   h+='<table class="vt"><tbody>';
   L.slice(0,state.vn).forEach(function(v){
     h+='<tr><td class="tm num">'+hm(v.t)+'</td><td class="sr">'+esc(v.src)+'</td><td class="pg">'+esc(v.pg)+(v.s>1?'<span class="x2">×'+v.s+'</span>':'')+
-      (v.c?'<span class="bd c">הוסיף לסל</span>':'')+(v.p?'<span class="bd p">קנה</span>':'')+'</td><td class="dv">'+(DV[v.dv]||'')+'</td></tr>';});
+      (v.p?'<span class="bd p">קנה'+(v.pv?' · '+ils(v.pv):'')+'</span>':'')+(v.c?(v.m&&v.m.length?v.m.map(function(n){return'<span class="cm"><b>🛒 הוסיף לסל'+(v.ct?' · '+hm(v.ct):'')+'</b>'+esc(n)+'</span>';}).join(''):'<span class="bd c">🛒 הוסיף לסל'+(v.ct?' · '+hm(v.ct):'')+'</span>'):'')+'</td><td class="dv">'+(DV[v.dv]||'')+'</td></tr>';});
   h+='</tbody></table>';
   if(L.length>state.vn)h+='<button class="more" id="vmore">עוד '+Math.min(30,L.length-state.vn)+' מתוך '+fmt(L.length)+'</button>';
   return h+'</div>';}
