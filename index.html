@@ -130,7 +130,7 @@ td.z{color:#C3C1CB;font-weight:400}
 .vt tr.hc .pg,.vt tr.hp .pg,.vt tr.hld .pg{color:var(--ink);font-weight:600}
 .tgs{display:flex;flex-wrap:wrap;align-items:center;gap:5px 6px;margin-top:5px}
 .tg{display:inline-flex;align-items:center;gap:4px;border-radius:7px;padding:2px 9px;font-size:13px;font-weight:800;line-height:1.5;white-space:nowrap;color:#fff}
-.tg.c{background:var(--ok)}.tg.p{background:var(--red)}.tg.l{background:var(--lead)}.tg.l a{color:#fff;text-decoration:underline;text-underline-offset:2px}.tg.lw{background:#E3F6EE;color:#0B7A55;text-decoration:none}
+.tg.c{background:var(--ok)}.tg.p{background:var(--red)}.tg.l{background:var(--lead)}.tg.l a{color:#fff;text-decoration:underline;text-underline-offset:2px}.tg.lw{background:#E3F6EE;color:#0B7A55;text-decoration:none}.tg.li{background:var(--lead-t);color:var(--lead);border:1px dashed var(--lead);cursor:default;font-weight:700}
 .vt tr.hld td{background:var(--lead-t)}.vt tr.hld td:first-child{box-shadow:inset -4px 0 0 var(--lead)}.chips button .ctl{background:var(--lead)}.tg small{font-weight:700;opacity:.9;font-size:12px}
 .tm2{font-size:13px;color:var(--ink);font-weight:600}.tm2 i{font-style:normal;color:var(--mut);font-weight:700}
 .chips button .ct{display:inline-block;min-width:18px;margin-inline-start:5px;padding:0 5px;border-radius:999px;background:var(--ok);color:#fff;font-size:12px;line-height:18px;text-align:center}
@@ -298,7 +298,7 @@ function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0
     if(v.p)tg+='<span class="tg p">✅ קנה'+(v.pv?' '+ils(v.pv):'')+'</span>';
     if(v.c)tg+='<span class="tg c">🛒 לסל'+(v.ct?' <small class="num">'+hm(v.ct)+'</small>':'')+'</span>';
     if(v.ph){var pn=v.ph[0]||'',wn=pn.replace(/^0/,'972');tg='<span class="tg l">📞 <a class="num" href="tel:'+esc(pn)+'" dir="ltr">'+esc(pn.replace(/^(05\d)(\d{3})(\d{4})$/,'$1-$2-$3'))+'</a>'+(v.ph[1]?' · '+esc(v.ph[1]):'')+'</span><a class="tg lw" href="https://wa.me/'+esc(wn)+'" target="_blank" rel="noopener">וואטסאפ</a>'+tg;}
-    else if(v.w||v.k)tg='<span class="tg l">'+(v.w?'💬 פנה בוואטסאפ <small class="num">'+hm(v.w)+'</small>':'☎️ לחץ לחייג <small class="num">'+hm(v.k)+'</small>')+'</span>'+tg;
+    else if(v.w||v.k)tg='<span class="tg li" title="'+(v.w?'הלקוח פתח וואטסאפ לעסק. השיחה מחכה ב-WhatsApp Business לפי השעה':'הלקוח חייג לעסק מהאתר. המספר שלו נמצא ביומן השיחות של 077-7715553 לפי השעה')+'">'+(v.w?'💬 כתב לכם בוואטסאפ <small class="num">'+hm(v.w)+'</small>':'☎️ התקשר אליכם <small class="num">'+hm(v.k)+'</small>')+'</span>'+tg;
     if(v.m&&v.m.length)tg+=v.m.map(function(n){return'<span class="tm2"><i>דגם:</i> '+esc(n)+'</span>';}).join('');
     h+='<tr'+(v.p?' class="hp"':v.ph||v.w||v.k?' class="hld"':(v.c?' class="hc"':''))+'><td class="tm num">'+hm(v.t)+'</td><td class="sr">'+esc(v.src)+'</td><td class="pg">'+esc(v.pg)+(v.s>1?'<span class="x2">×'+v.s+'</span>':'')+
       (tg?'<div class="tgs">'+tg+'</div>':'')+'</td><td class="dv">'+(DV[v.dv]||'')+'</td></tr>';});
