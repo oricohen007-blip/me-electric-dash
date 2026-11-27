@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Secular+One&display=swap" rel="stylesheet">
 <style>
-:root{--red:#E5133A;--red-d:#B80D2D;--red-t:#FFE9ED;--ink:#1D1D2B;--mut:#77768A;--line:#ECEAF0;--bg:#FAF9FB;--panel:#fff;--ok:#0E9F6E;--ok-t:#E3F6EE;--bar:#D9D6E0;
+:root{--red:#E5133A;--red-d:#B80D2D;--red-t:#FFE9ED;--ink:#1D1D2B;--mut:#77768A;--line:#ECEAF0;--bg:#FAF9FB;--panel:#fff;--ok:#0E9F6E;--ok-t:#E3F6EE;--lead:#5B3FD6;--lead-t:#EFEBFF;--bar:#D9D6E0;
   --disp:"Secular One","Assistant",sans-serif;--body:"Assistant","Segoe UI",Arial,sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -127,10 +127,11 @@ td.z{color:#C3C1CB;font-weight:400}
 .bd.p{background:var(--red-t);color:var(--red-d)}
 .vt tr.hc td{background:#EFFAF4}.vt tr.hp td{background:#FFF0F3}
 .vt tr.hc td:first-child{box-shadow:inset -4px 0 0 var(--ok)}.vt tr.hp td:first-child{box-shadow:inset -4px 0 0 var(--red)}
-.vt tr.hc .pg,.vt tr.hp .pg{color:var(--ink);font-weight:600}
+.vt tr.hc .pg,.vt tr.hp .pg,.vt tr.hld .pg{color:var(--ink);font-weight:600}
 .tgs{display:flex;flex-wrap:wrap;align-items:center;gap:5px 6px;margin-top:5px}
 .tg{display:inline-flex;align-items:center;gap:4px;border-radius:7px;padding:2px 9px;font-size:13px;font-weight:800;line-height:1.5;white-space:nowrap;color:#fff}
-.tg.c{background:var(--ok)}.tg.p{background:var(--red)}.tg small{font-weight:700;opacity:.9;font-size:12px}
+.tg.c{background:var(--ok)}.tg.p{background:var(--red)}.tg.l{background:var(--lead)}.tg.l a{color:#fff;text-decoration:underline;text-underline-offset:2px}.tg.lw{background:#E3F6EE;color:#0B7A55;text-decoration:none}
+.vt tr.hld td{background:var(--lead-t)}.vt tr.hld td:first-child{box-shadow:inset -4px 0 0 var(--lead)}.chips button .ctl{background:var(--lead)}.tg small{font-weight:700;opacity:.9;font-size:12px}
 .tm2{font-size:13px;color:var(--ink);font-weight:600}.tm2 i{font-style:normal;color:var(--mut);font-weight:700}
 .chips button .ct{display:inline-block;min-width:18px;margin-inline-start:5px;padding:0 5px;border-radius:999px;background:var(--ok);color:#fff;font-size:12px;line-height:18px;text-align:center}
 .x2{color:var(--mut);font-size:12px;font-weight:700;margin-inline-start:4px}
@@ -244,9 +245,11 @@ function allVis(){var by={},out=[],first=null;
   (HITS||[]).forEach(function(h){var x=by[h[1]]||(by[h[1]]={c:0,p:0,m:[]});if(!first||h[0]<first)first=h[0];
     if(h[2]==='s'){x.t=h[0];x.sm=h[3];x.lp=h[4];x.dv=h[5];}
     else if(h[2]==='c'){x.c=1;var nm=modelName(h[4]);if(nm&&x.m.indexOf(nm)<0)x.m.push(nm);if(!x.ct)x.ct=h[0];}
-    else if(h[2]==='p'){x.p=1;x.pv=(x.pv||0)+(+h[6]||0);}});
+    else if(h[2]==='p'){x.p=1;x.pv=(x.pv||0)+(+h[6]||0);}
+    else if(h[2]==='l'){x.ph=String(h[4]||'').split('|');}
+    else if(h[2]==='w'){if(!x.w)x.w=h[0];}else if(h[2]==='k'){if(!x.k)x.k=h[0];}});
   Object.keys(by).forEach(function(id){var x=by[id];if(!x.t||/^mehittest\|/.test(x.sm))return;var sm=x.sm.split('|');
-    out.push({t:x.t,d:x.t.slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(x.lp),dv:x.dv,s:1,c:x.c,p:x.p,m:x.m,ct:x.ct,pv:x.pv,live:1});});
+    out.push({t:x.t,d:x.t.slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(x.lp),dv:x.dv,s:1,c:x.c,p:x.p,m:x.m,ct:x.ct,pv:x.pv,ph:x.ph,w:x.w,k:x.k,live:1});});
   out.sort(function(a,b){return a.t<b.t?1:-1;});
   /* Analytics רק לזמן שלפני שהמונה התחיל (המונה שומר 48 שעות) */
   var cut=first?first.slice(0,8)+'0000':'0';if(first&&first.slice(8)>'0030')cut=first;
@@ -278,13 +281,15 @@ function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0
   else day=state.r==='y'?Y:T;
   if(day===T&&!state.day&&!VIS.some(function(v){return v.d===T;}))day=Y;
   var nC=day?VIS.filter(function(v){return v.d===day&&(v.c||v.p);}).length:0,nP=day?VIS.filter(function(v){return v.d===day&&v.p;}).length:0;
+  var nL=day?VIS.filter(function(v){return v.d===day&&v.ph;}).length:0,nW=day?VIS.filter(function(v){return v.d===day&&!v.ph&&(v.w||v.k);}).length:0;
   var h='<div class="card"><h3>כל כניסה'+(day?' · '+(day===T?'היום':day===Y?'אתמול':nice(day)):'')+
-    '<span class="chips" id="vf"><button data-f="all" class="'+(state.vf==='all'?'on':'')+'">הכול</button><button data-f="c" class="'+(state.vf==='c'?'on':'')+'">הוסיפו לסל או קנו'+(day&&nC?'<span class="ct num">'+nC+'</span>':'')+'</button></span></h3>';
+    '<span class="chips" id="vf"><button data-f="all" class="'+(state.vf==='all'?'on':'')+'">הכול</button><button data-f="c" class="'+(state.vf==='c'?'on':'')+'">הוסיפו לסל או קנו'+(day&&nC?'<span class="ct num">'+nC+'</span>':'')+'</button><button data-f="l" class="'+(state.vf==='l'?'on':'')+'">השאירו טלפון או פנו'+(day&&(nL+nW)?'<span class="ct num ctl">'+(nL+nW)+'</span>':'')+'</button></span></h3>';
   if(!day)return h+'<div class="empty">רשימה של כל כניסה יש רק להיום ולאתמול</div></div>';
-  var L=VIS.filter(function(v){return v.d===day&&(state.vf==='all'||v.c||v.p);});
+  var L=VIS.filter(function(v){return v.d===day&&(state.vf==='all'||(state.vf==='l'?v.ph||v.w||v.k:v.c||v.p));});
   var last=VIS.filter(function(v){return v.d===day;})[0];
   h+='<div class="note" style="margin:-4px 0 6px">'+(last?'הכניסה האחרונה: '+hm(last.t)+(day===T?(hasLive?' · מתעדכן מיד':' · Analytics מתעדכן באיחור של 2–3 שעות'):''):'')+
-    (nC?' · <b style="color:var(--ok)">'+fmt(nC)+' הוסיפו לסל'+(nP?' · '+fmt(nP)+(nP===1?' קנה':' קנו'):'')+'</b> (מסומנים בצבע)':' · אף אחד עוד לא הוסיף לסל')+'</div>';
+    (nC?' · <b style="color:var(--ok)">'+fmt(nC)+' הוסיפו לסל'+(nP?' · '+fmt(nP)+(nP===1?' קנה':' קנו'):'')+'</b> (מסומנים בצבע)':' · אף אחד עוד לא הוסיף לסל')+
+    (nL?' · <b style="color:var(--lead)">'+fmt(nL)+(nL===1?' השאיר טלפון':' השאירו טלפון')+'</b>':'')+(nW?' · <b style="color:var(--lead)">'+fmt(nW)+' פנו בוואטסאפ או בטלפון</b>':'')+'</div>';
   if(!L.length)return h+'<div class="empty">אין כניסות להצגה</div></div>';
   var DV={m:'נייד',d:'מחשב',t:'טאבלט'};
   h+='<table class="vt"><tbody>';
@@ -292,8 +297,10 @@ function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0
     var tg='';
     if(v.p)tg+='<span class="tg p">✅ קנה'+(v.pv?' '+ils(v.pv):'')+'</span>';
     if(v.c)tg+='<span class="tg c">🛒 לסל'+(v.ct?' <small class="num">'+hm(v.ct)+'</small>':'')+'</span>';
+    if(v.ph){var pn=v.ph[0]||'',wn=pn.replace(/^0/,'972');tg='<span class="tg l">📞 <a class="num" href="tel:'+esc(pn)+'" dir="ltr">'+esc(pn.replace(/^(05\d)(\d{3})(\d{4})$/,'$1-$2-$3'))+'</a>'+(v.ph[1]?' · '+esc(v.ph[1]):'')+'</span><a class="tg lw" href="https://wa.me/'+esc(wn)+'" target="_blank" rel="noopener">וואטסאפ</a>'+tg;}
+    else if(v.w||v.k)tg='<span class="tg l">'+(v.w?'💬 פנה בוואטסאפ <small class="num">'+hm(v.w)+'</small>':'☎️ לחץ לחייג <small class="num">'+hm(v.k)+'</small>')+'</span>'+tg;
     if(v.m&&v.m.length)tg+=v.m.map(function(n){return'<span class="tm2"><i>דגם:</i> '+esc(n)+'</span>';}).join('');
-    h+='<tr'+(v.p?' class="hp"':(v.c?' class="hc"':''))+'><td class="tm num">'+hm(v.t)+'</td><td class="sr">'+esc(v.src)+'</td><td class="pg">'+esc(v.pg)+(v.s>1?'<span class="x2">×'+v.s+'</span>':'')+
+    h+='<tr'+(v.p?' class="hp"':v.ph||v.w||v.k?' class="hld"':(v.c?' class="hc"':''))+'><td class="tm num">'+hm(v.t)+'</td><td class="sr">'+esc(v.src)+'</td><td class="pg">'+esc(v.pg)+(v.s>1?'<span class="x2">×'+v.s+'</span>':'')+
       (tg?'<div class="tgs">'+tg+'</div>':'')+'</td><td class="dv">'+(DV[v.dv]||'')+'</td></tr>';});
   h+='</tbody></table>';
   if(L.length>state.vn)h+='<button class="more" id="vmore">עוד '+Math.min(30,L.length-state.vn)+' מתוך '+fmt(L.length)+'</button>';
