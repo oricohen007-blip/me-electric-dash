@@ -283,13 +283,13 @@ function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0
   var nC=day?VIS.filter(function(v){return v.d===day&&(v.c||v.p);}).length:0,nP=day?VIS.filter(function(v){return v.d===day&&v.p;}).length:0;
   var nL=day?VIS.filter(function(v){return v.d===day&&v.ph;}).length:0,nW=day?VIS.filter(function(v){return v.d===day&&!v.ph&&(v.w||v.k);}).length:0;
   var h='<div class="card"><h3>כל כניסה'+(day?' · '+(day===T?'היום':day===Y?'אתמול':nice(day)):'')+
-    '<span class="chips" id="vf"><button data-f="all" class="'+(state.vf==='all'?'on':'')+'">הכול</button><button data-f="c" class="'+(state.vf==='c'?'on':'')+'">הוסיפו לסל או קנו'+(day&&nC?'<span class="ct num">'+nC+'</span>':'')+'</button><button data-f="l" class="'+(state.vf==='l'?'on':'')+'">השאירו טלפון או פנו'+(day&&(nL+nW)?'<span class="ct num ctl">'+(nL+nW)+'</span>':'')+'</button></span></h3>';
+    '<span class="chips" id="vf"><button data-f="all" class="'+(state.vf==='all'?'on':'')+'">הכול</button><button data-f="c" class="'+(state.vf==='c'?'on':'')+'">הוסיפו לסל או קנו'+(day&&nC?'<span class="ct num">'+nC+'</span>':'')+'</button><button data-f="l" class="'+(state.vf==='l'?'on':'')+'">טלפון או וואטסאפ'+(day&&(nL+nW)?'<span class="ct num ctl">'+(nL+nW)+'</span>':'')+'</button></span></h3>';
   if(!day)return h+'<div class="empty">רשימה של כל כניסה יש רק להיום ולאתמול</div></div>';
   var L=VIS.filter(function(v){return v.d===day&&(state.vf==='all'||(state.vf==='l'?v.ph||v.w||v.k:v.c||v.p));});
   var last=VIS.filter(function(v){return v.d===day;})[0];
   h+='<div class="note" style="margin:-4px 0 6px">'+(last?'הכניסה האחרונה: '+hm(last.t)+(day===T?(hasLive?' · מתעדכן מיד':' · Analytics מתעדכן באיחור של 2–3 שעות'):''):'')+
     (nC?' · <b style="color:var(--ok)">'+fmt(nC)+' הוסיפו לסל'+(nP?' · '+fmt(nP)+(nP===1?' קנה':' קנו'):'')+'</b> (מסומנים בצבע)':' · אף אחד עוד לא הוסיף לסל')+
-    (nL?' · <b style="color:var(--lead)">'+fmt(nL)+(nL===1?' השאיר טלפון':' השאירו טלפון')+'</b>':'')+(nW?' · <b style="color:var(--lead)">'+fmt(nW)+' פנו בוואטסאפ או בטלפון</b>':'')+'</div>';
+    (nL?' · <b style="color:var(--lead)">'+fmt(nL)+(nL===1?' השאיר טלפון':' השאירו טלפון')+'</b>':'')+(nW?' · <b style="color:var(--lead)">'+fmt(nW)+' לחצו על וואטסאפ או חיוג</b> (לא כולם שלחו)':'')+'</div>';
   if(!L.length)return h+'<div class="empty">'+(state.vf==='l'?'עוד אין כאן אף אחד. נספר מ-27.11 בשעה 10:48: מי שמשאיר טלפון בבוט או בחלון, או לוחץ על וואטסאפ או חיוג, יופיע כאן':'אין כניסות להצגה')+'</div></div>';
   var DV={m:'נייד',d:'מחשב',t:'טאבלט'};
   h+='<table class="vt"><tbody>';
@@ -298,7 +298,7 @@ function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0
     if(v.p)tg+='<span class="tg p">✅ קנה'+(v.pv?' '+ils(v.pv):'')+'</span>';
     if(v.c)tg+='<span class="tg c">🛒 לסל'+(v.ct?' <small class="num">'+hm(v.ct)+'</small>':'')+'</span>';
     if(v.ph){var pn=v.ph[0]||'',wn=pn.replace(/^0/,'972');tg='<span class="tg l">📞 <a class="num" href="tel:'+esc(pn)+'" dir="ltr">'+esc(pn.replace(/^(05\d)(\d{3})(\d{4})$/,'$1-$2-$3'))+'</a>'+(v.ph[1]?' · '+esc(v.ph[1]):'')+'</span><a class="tg lw" href="https://wa.me/'+esc(wn)+'" target="_blank" rel="noopener">וואטסאפ</a>'+tg;}
-    else if(v.w||v.k)tg='<span class="tg li" title="'+(v.w?'הלקוח פתח וואטסאפ לעסק. השיחה מחכה ב-WhatsApp Business לפי השעה':'הלקוח חייג לעסק מהאתר. המספר שלו נמצא ביומן השיחות של 077-7715553 לפי השעה')+'">'+(v.w?'💬 כתב לכם בוואטסאפ <small class="num">'+hm(v.w)+'</small>':'☎️ התקשר אליכם <small class="num">'+hm(v.k)+'</small>')+'</span>'+tg;
+    else if(v.w||v.k)tg='<span class="tg li" title="'+(v.w?'פתח את וואטסאפ מהאתר. לא בטוח ששלח: רק אם יש שיחה ב-WhatsApp Business בשעה הזו, הוא כתב':'לחץ על חיוג באתר. לא בטוח שהשיחה יצאה: בודקים ביומן השיחות של 077-7715553 לפי השעה')+'">'+(v.w?'💬 פתח וואטסאפ <small class="num">'+hm(v.w)+'</small>':'☎️ לחץ על חיוג <small class="num">'+hm(v.k)+'</small>')+'</span>'+tg;
     if(v.m&&v.m.length)tg+=v.m.map(function(n){return'<span class="tm2"><i>דגם:</i> '+esc(n)+'</span>';}).join('');
     h+='<tr'+(v.p?' class="hp"':v.ph||v.w||v.k?' class="hld"':(v.c?' class="hc"':''))+'><td class="tm num">'+hm(v.t)+'</td><td class="sr">'+esc(v.src)+'</td><td class="pg">'+esc(v.pg)+(v.s>1?'<span class="x2">×'+v.s+'</span>':'')+
       (tg?'<div class="tgs">'+tg+'</div>':'')+'</td><td class="dv">'+(DV[v.dv]||'')+'</td></tr>';});
