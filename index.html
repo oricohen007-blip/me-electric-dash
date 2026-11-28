@@ -247,9 +247,9 @@ function allVis(){var by={},out=[],first=null;
     else if(h[2]==='c'){x.c=1;var nm=modelName(h[4]);if(nm&&x.m.indexOf(nm)<0)x.m.push(nm);if(!x.ct)x.ct=h[0];}
     else if(h[2]==='p'){x.p=1;x.pv=(x.pv||0)+(+h[6]||0);}
     else if(h[2]==='l'){x.ph=String(h[4]||'').split('|');}
-    else if(h[2]==='w'){if(!x.w)x.w=h[0];}else if(h[2]==='k'){if(!x.k)x.k=h[0];}});
+    else if(h[2]==='w'){if(!x.w){x.w=h[0];if(/^\d{4}$/.test(h[4]))x.wr=h[4];}}else if(h[2]==='k'){if(!x.k)x.k=h[0];}});
   Object.keys(by).forEach(function(id){var x=by[id];if(!x.t||/^mehittest\|/.test(x.sm))return;var sm=x.sm.split('|');
-    out.push({t:x.t,d:x.t.slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(x.lp),dv:x.dv,s:1,c:x.c,p:x.p,m:x.m,ct:x.ct,pv:x.pv,ph:x.ph,w:x.w,k:x.k,live:1});});
+    out.push({t:x.t,d:x.t.slice(0,8),src:srcName(sm[0],sm[1]),pg:pageName(x.lp),dv:x.dv,s:1,c:x.c,p:x.p,m:x.m,ct:x.ct,pv:x.pv,ph:x.ph,w:x.w,wr:x.wr,k:x.k,live:1});});
   out.sort(function(a,b){return a.t<b.t?1:-1;});
   /* Analytics רק לזמן שלפני שהמונה התחיל (המונה שומר 48 שעות) */
   var cut=first?first.slice(0,8)+'0000':'0';if(first&&first.slice(8)>'0030')cut=first;
@@ -298,7 +298,7 @@ function visitsHtml(){var Y=add(T,-1),day,VIS=allVis(),hasLive=VIS.length&&VIS[0
     if(v.p)tg+='<span class="tg p">✅ קנה'+(v.pv?' '+ils(v.pv):'')+'</span>';
     if(v.c)tg+='<span class="tg c">🛒 לסל'+(v.ct?' <small class="num">'+hm(v.ct)+'</small>':'')+'</span>';
     if(v.ph){var pn=v.ph[0]||'',wn=pn.replace(/^0/,'972');tg='<span class="tg l">📞 <a class="num" href="tel:'+esc(pn)+'" dir="ltr">'+esc(pn.replace(/^(05\d)(\d{3})(\d{4})$/,'$1-$2-$3'))+'</a>'+(v.ph[1]?' · '+esc(v.ph[1]):'')+'</span><a class="tg lw" href="https://wa.me/'+esc(wn)+'" target="_blank" rel="noopener">וואטסאפ</a>'+tg;}
-    else if(v.w||v.k)tg='<span class="tg li" title="'+(v.w?'פתח את וואטסאפ מהאתר. לא בטוח ששלח: רק אם יש שיחה ב-WhatsApp Business בשעה הזו, הוא כתב':'לחץ על חיוג באתר. לא בטוח שהשיחה יצאה: בודקים ביומן השיחות של 077-7715553 לפי השעה')+'">'+(v.w?'💬 פתח וואטסאפ <small class="num">'+hm(v.w)+'</small>':'☎️ לחץ על חיוג <small class="num">'+hm(v.k)+'</small>')+'</span>'+tg;
+    else if(v.w||v.k)tg='<span class="tg li" title="'+(v.w?(v.wr?'חפשו '+v.wr+' ב-WhatsApp Business. אם ההודעה עם המספר הזה שם, הוא שלח':'פתח את וואטסאפ מהאתר. לא בטוח ששלח: רק אם יש שיחה ב-WhatsApp Business בשעה הזו, הוא כתב'):'לחץ על חיוג באתר. לא בטוח שהשיחה יצאה: בודקים ביומן השיחות של 077-7715553 לפי השעה')+'">'+(v.w?'💬 פתח וואטסאפ <small class="num">'+hm(v.w)+'</small>'+(v.wr?' · מספר פנייה <b class="num">'+v.wr+'</b>':''):'☎️ לחץ על חיוג <small class="num">'+hm(v.k)+'</small>')+'</span>'+tg;
     if(v.m&&v.m.length)tg+=v.m.map(function(n){return'<span class="tm2"><i>דגם:</i> '+esc(n)+'</span>';}).join('');
     h+='<tr'+(v.p?' class="hp"':v.ph||v.w||v.k?' class="hld"':(v.c?' class="hc"':''))+'><td class="tm num">'+hm(v.t)+'</td><td class="sr">'+esc(v.src)+'</td><td class="pg">'+esc(v.pg)+(v.s>1?'<span class="x2">×'+v.s+'</span>':'')+
       (tg?'<div class="tgs">'+tg+'</div>':'')+'</td><td class="dv">'+(DV[v.dv]||'')+'</td></tr>';});
